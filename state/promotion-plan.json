@@ -1,0 +1,906 @@
+{
+  "sourceRegistry": "https://start9.mempool.guide",
+  "destinationRegistry": "https://registry.startos.spectreworks.io",
+  "inspectedAt": "2026-10-07T22:03:38Z",
+  "status": "awaiting-operator-approval",
+  "proposal": "Promote only the newest revision of each package. Leave older revisions unpromoted. Do not publish StartOS images.",
+  "proposedCategories": [
+    {
+      "id": "xbt-nodes",
+      "name": "XBT Nodes",
+      "packages": [
+        "bitcoind"
+      ]
+    },
+    {
+      "id": "indexers",
+      "name": "Indexers",
+      "packages": [
+        "fulcrum"
+      ]
+    },
+    {
+      "id": "mining",
+      "name": "Mining",
+      "packages": [
+        "datum"
+      ]
+    },
+    {
+      "id": "explorers",
+      "name": "Explorers",
+      "packages": [
+        "mempool"
+      ]
+    },
+    {
+      "id": "wallets",
+      "name": "Wallets",
+      "packages": [
+        "canary"
+      ]
+    }
+  ],
+  "packages": [
+    {
+      "packageId": "bitcoind",
+      "title": "Bitcoin Knots",
+      "versionKey": "#knots:29.4.1:5",
+      "flavor": "knots",
+      "version": "29.4.1",
+      "revision": 5,
+      "proposed": false,
+      "categories": [
+        "bitcoin"
+      ],
+      "proposedCategoryIds": [],
+      "hardware": [
+        {
+          "device": [],
+          "ram": null,
+          "arch": null
+        }
+      ],
+      "urls": [
+        "https://github.com/Retropex/knots-startos/releases/download/v29.4.1_5-knots/bitcoind.s9pk"
+      ],
+      "commitment": {
+        "rootSighash": "sos9YFvR4LCrztuCHRseZdxhdqTlsB63rfbP9dcpLKk",
+        "rootMaxsize": 515
+      },
+      "publishedAt": "2026-09-02T11:16:33.777790019Z",
+      "packageRepo": "https://github.com/bitcoinknots/bitcoin-knots-startos",
+      "upstreamRepo": "https://github.com/bitcoinknots/bitcoin",
+      "osVersion": "0.4.0-beta.10",
+      "license": "MIT",
+      "summary": "A Bitcoin Full Node by Bitcoin Knots"
+    },
+    {
+      "packageId": "bitcoind",
+      "title": "Bitcoin Knots",
+      "versionKey": "#knots:29.4.1:6",
+      "flavor": "knots",
+      "version": "29.4.1",
+      "revision": 6,
+      "proposed": false,
+      "categories": [
+        "bitcoin"
+      ],
+      "proposedCategoryIds": [],
+      "hardware": [
+        {
+          "device": [],
+          "ram": null,
+          "arch": null
+        }
+      ],
+      "urls": [
+        "https://github.com/Retropex/knots-startos/releases/download/v29.4.1.knots20260508/bitcoind.s9pk"
+      ],
+      "commitment": {
+        "rootSighash": "8njly+kvLX5FsKVncNtmG+phuhz9vjPbUVTNL2d8AHM",
+        "rootMaxsize": 515
+      },
+      "publishedAt": "2026-09-02T19:37:38.465859432Z",
+      "packageRepo": "https://github.com/bitcoinknots/bitcoin-knots-startos",
+      "upstreamRepo": "https://github.com/bitcoinknots/bitcoin",
+      "osVersion": "0.4.0-beta.10",
+      "license": "MIT",
+      "summary": "A Bitcoin Full Node by Bitcoin Knots"
+    },
+    {
+      "packageId": "bitcoind",
+      "title": "Bitcoin Knots",
+      "versionKey": "#knots:29.4.1:7",
+      "flavor": "knots",
+      "version": "29.4.1",
+      "revision": 7,
+      "proposed": false,
+      "categories": [
+        "bitcoin"
+      ],
+      "proposedCategoryIds": [],
+      "hardware": [
+        {
+          "device": [],
+          "ram": null,
+          "arch": null
+        }
+      ],
+      "urls": [
+        "https://github.com/Retropex/knots-startos/releases/download/v29.4.1.knots20260508-1/bitcoind.s9pk"
+      ],
+      "commitment": {
+        "rootSighash": "gIvjKYzIEs6JwyNit2JuIFNK7l3N/DR/skYFNne0hnE",
+        "rootMaxsize": 515
+      },
+      "publishedAt": "2026-09-05T10:22:34.828723428Z",
+      "packageRepo": "https://github.com/bitcoinknots/bitcoin-knots-startos",
+      "upstreamRepo": "https://github.com/bitcoinknots/bitcoin",
+      "osVersion": "0.4.0-beta.10",
+      "license": "MIT",
+      "summary": "A Bitcoin Full Node by Bitcoin Knots"
+    },
+    {
+      "packageId": "bitcoind",
+      "title": "Bitcoin Knots",
+      "versionKey": "#knots:29.4.2:3",
+      "flavor": "knots",
+      "version": "29.4.2",
+      "revision": 3,
+      "proposed": false,
+      "categories": [
+        "bitcoin"
+      ],
+      "proposedCategoryIds": [],
+      "hardware": [
+        {
+          "device": [],
+          "ram": null,
+          "arch": null
+        }
+      ],
+      "urls": [
+        "https://github.com/Retropex/knots-startos/releases/download/v29.4.2.knots20260508/bitcoind.s9pk"
+      ],
+      "commitment": {
+        "rootSighash": "gqHVraV+f5QNUm7JQ2uClS+x0bPXq+pHfT7R6amrtBs",
+        "rootMaxsize": 515
+      },
+      "publishedAt": "2026-09-21T07:48:35.094546786Z",
+      "packageRepo": "https://github.com/bitcoinknots/bitcoin-knots-startos",
+      "upstreamRepo": "https://github.com/bitcoinknots/bitcoin",
+      "osVersion": "0.4.0-beta.10",
+      "license": "MIT",
+      "summary": "A Bitcoin Full Node by Bitcoin Knots"
+    },
+    {
+      "packageId": "bitcoind",
+      "title": "Bitcoin Knots",
+      "versionKey": "#knots:29.4.2:4",
+      "flavor": "knots",
+      "version": "29.4.2",
+      "revision": 4,
+      "proposed": true,
+      "categories": [
+        "bitcoin"
+      ],
+      "proposedCategoryIds": [
+        "xbt-nodes"
+      ],
+      "hardware": [
+        {
+          "device": [],
+          "ram": null,
+          "arch": null
+        }
+      ],
+      "urls": [
+        "https://github.com/Retropex/knots-startos/releases/download/v29.4.2.knots20260508-1/bitcoind.s9pk"
+      ],
+      "commitment": {
+        "rootSighash": "U18GFkUwKHYb3dklATMjTAMFbnKgzrbJYYxjQWc3YXQ",
+        "rootMaxsize": 515
+      },
+      "publishedAt": "2026-10-04T13:20:44.600868500Z",
+      "packageRepo": "https://github.com/bitcoinknots/bitcoin-knots-startos",
+      "upstreamRepo": "https://github.com/bitcoinknots/bitcoin",
+      "osVersion": "0.4.0-beta.10",
+      "license": "MIT",
+      "summary": "A Bitcoin Full Node by Bitcoin Knots"
+    },
+    {
+      "packageId": "canary",
+      "title": "Canary",
+      "versionKey": "#blake:1.6.2:1",
+      "flavor": "blake",
+      "version": "1.6.2",
+      "revision": 1,
+      "proposed": false,
+      "categories": [],
+      "proposedCategoryIds": [],
+      "hardware": [
+        {
+          "device": [],
+          "ram": null,
+          "arch": null
+        }
+      ],
+      "urls": [
+        "https://github.com/privkeyio/canary-startos/releases/download/v1.6.2-blake/canary.s9pk"
+      ],
+      "commitment": {
+        "rootSighash": "d9iHfwT7JNSt8yqtFGzmfUuPd6hCYzFHgsK8RoegneM",
+        "rootMaxsize": 515
+      },
+      "publishedAt": "2026-09-08T08:04:22.623814998Z",
+      "packageRepo": "https://github.com/privkeyio/canary-startos/",
+      "upstreamRepo": "https://github.com/privkeyio/canary/",
+      "osVersion": "0.4.0-beta.8",
+      "license": "Elastic-2.0",
+      "summary": "Bitcoin wallet monitoring service with transaction notifications"
+    },
+    {
+      "packageId": "canary",
+      "title": "Canary",
+      "versionKey": "#blake:1.7.0:0",
+      "flavor": "blake",
+      "version": "1.7.0",
+      "revision": 0,
+      "proposed": true,
+      "categories": [],
+      "proposedCategoryIds": [
+        "wallets"
+      ],
+      "hardware": [
+        {
+          "device": [],
+          "ram": null,
+          "arch": null
+        }
+      ],
+      "urls": [
+        "https://github.com/privkeyio/canary-startos/releases/download/v1.7.0-blake/canary.s9pk"
+      ],
+      "commitment": {
+        "rootSighash": "4I1jVGHmxNrALX0096c1cGxRSs9XQk1xS/L90FuEDNA",
+        "rootMaxsize": 515
+      },
+      "publishedAt": "2026-10-07T04:47:56.492143546Z",
+      "packageRepo": "https://github.com/privkeyio/canary-startos/",
+      "upstreamRepo": "https://github.com/privkeyio/canary/",
+      "osVersion": "0.4.0-beta.8",
+      "license": "Elastic-2.0",
+      "summary": "Bitcoin wallet monitoring service with transaction notifications"
+    },
+    {
+      "packageId": "datum",
+      "title": "Datum Gateway",
+      "versionKey": "#pow:0.4.1:17",
+      "flavor": "pow",
+      "version": "0.4.1",
+      "revision": 17,
+      "proposed": false,
+      "categories": [
+        "bitcoin"
+      ],
+      "proposedCategoryIds": [],
+      "hardware": [
+        {
+          "device": [],
+          "ram": null,
+          "arch": null
+        }
+      ],
+      "urls": [
+        "https://github.com/Retropex/datum-gateway-startos/releases/download/pow_0.4.1_17/datum.s9pk"
+      ],
+      "commitment": {
+        "rootSighash": "u6Yf6rdgL2WWMerJkfhOqMco9BFmpPNIwhYzLbKVaEc",
+        "rootMaxsize": 515
+      },
+      "publishedAt": "2026-09-02T11:21:26.101604002Z",
+      "packageRepo": "https://github.com/Start9Labs/datum-gateway-startos",
+      "upstreamRepo": "https://github.com/ocean-xyz/datum-gateway",
+      "osVersion": "0.4.0-beta.10",
+      "license": "mit",
+      "summary": "Make block templates and issue work to your miners"
+    },
+    {
+      "packageId": "datum",
+      "title": "Datum Gateway",
+      "versionKey": "#pow:0.4.1:18",
+      "flavor": "pow",
+      "version": "0.4.1",
+      "revision": 18,
+      "proposed": false,
+      "categories": [
+        "bitcoin"
+      ],
+      "proposedCategoryIds": [],
+      "hardware": [
+        {
+          "device": [],
+          "ram": null,
+          "arch": null
+        }
+      ],
+      "urls": [
+        "https://github.com/Retropex/datum-gateway-startos/releases/download/pow_0.4.1_18/datum.s9pk"
+      ],
+      "commitment": {
+        "rootSighash": "MVhIgM11GBFa62xw7fGcEZbOrvU/M6phVcTvIHsGm9k",
+        "rootMaxsize": 515
+      },
+      "publishedAt": "2026-09-03T12:35:49.796124554Z",
+      "packageRepo": "https://github.com/Start9Labs/datum-gateway-startos",
+      "upstreamRepo": "https://github.com/ocean-xyz/datum-gateway",
+      "osVersion": "0.4.0-beta.10",
+      "license": "mit",
+      "summary": "Make block templates and issue work to your miners"
+    },
+    {
+      "packageId": "datum",
+      "title": "Datum Gateway",
+      "versionKey": "#pow:0.4.1:19",
+      "flavor": "pow",
+      "version": "0.4.1",
+      "revision": 19,
+      "proposed": false,
+      "categories": [
+        "bitcoin"
+      ],
+      "proposedCategoryIds": [],
+      "hardware": [
+        {
+          "device": [],
+          "ram": null,
+          "arch": null
+        }
+      ],
+      "urls": [
+        "https://github.com/Retropex/datum-gateway-startos/releases/download/pow_0.4.1_19/datum.s9pk"
+      ],
+      "commitment": {
+        "rootSighash": "LhbbY96q+IEc57QYjYEwUWxKbbYxxwQ3BYF+VBjONj4",
+        "rootMaxsize": 515
+      },
+      "publishedAt": "2026-09-05T10:24:44.627267544Z",
+      "packageRepo": "https://github.com/Start9Labs/datum-gateway-startos",
+      "upstreamRepo": "https://github.com/ocean-xyz/datum-gateway",
+      "osVersion": "0.4.0-beta.10",
+      "license": "mit",
+      "summary": "Make block templates and issue work to your miners"
+    },
+    {
+      "packageId": "datum",
+      "title": "Datum Gateway",
+      "versionKey": "#pow:0.4.1:21",
+      "flavor": "pow",
+      "version": "0.4.1",
+      "revision": 21,
+      "proposed": false,
+      "categories": [
+        "bitcoin"
+      ],
+      "proposedCategoryIds": [],
+      "hardware": [
+        {
+          "device": [],
+          "ram": null,
+          "arch": null
+        }
+      ],
+      "urls": [
+        "https://github.com/Retropex/datum-gateway-startos/releases/download/pow_0.4.1_21/datum.s9pk"
+      ],
+      "commitment": {
+        "rootSighash": "5XZzEmE1IscXk6W0pK0Kw8HVCIYF0doJsedJTq6ZU4A",
+        "rootMaxsize": 515
+      },
+      "publishedAt": "2026-09-06T07:24:03.142109217Z",
+      "packageRepo": "https://github.com/retropex/datum-gateway-startos",
+      "upstreamRepo": "https://github.com/CONVOYMining/datum_gateway",
+      "osVersion": "0.4.0-beta.10",
+      "license": "mit",
+      "summary": "Make block templates and issue work to your miners"
+    },
+    {
+      "packageId": "datum",
+      "title": "Datum Gateway",
+      "versionKey": "#pow:0.4.1:22",
+      "flavor": "pow",
+      "version": "0.4.1",
+      "revision": 22,
+      "proposed": false,
+      "categories": [
+        "bitcoin"
+      ],
+      "proposedCategoryIds": [],
+      "hardware": [
+        {
+          "device": [],
+          "ram": null,
+          "arch": null
+        }
+      ],
+      "urls": [
+        "https://github.com/Retropex/datum-gateway-startos/releases/download/pow_0.4.1_22/datum.s9pk"
+      ],
+      "commitment": {
+        "rootSighash": "CusAZB3+XENErgZfgFRwg572k4t89Iw4Yc7UY/afNbY",
+        "rootMaxsize": 515
+      },
+      "publishedAt": "2026-09-06T13:41:05.483029046Z",
+      "packageRepo": "https://github.com/retropex/datum-gateway-startos",
+      "upstreamRepo": "https://github.com/CONVOYMining/datum_gateway",
+      "osVersion": "0.4.0-beta.10",
+      "license": "mit",
+      "summary": "Make block templates and issue work to your miners"
+    },
+    {
+      "packageId": "datum",
+      "title": "Datum Gateway",
+      "versionKey": "#pow:0.4.1:23",
+      "flavor": "pow",
+      "version": "0.4.1",
+      "revision": 23,
+      "proposed": false,
+      "categories": [
+        "bitcoin"
+      ],
+      "proposedCategoryIds": [],
+      "hardware": [
+        {
+          "device": [],
+          "ram": null,
+          "arch": null
+        }
+      ],
+      "urls": [
+        "https://github.com/Retropex/datum-gateway-startos/releases/download/pow_0.4.1_23/datum.s9pk"
+      ],
+      "commitment": {
+        "rootSighash": "qKnFq8CngvkxEQfgiNbJPP5w9qtncLKmmUCooMwqdu0",
+        "rootMaxsize": 515
+      },
+      "publishedAt": "2026-09-08T12:15:52.779664517Z",
+      "packageRepo": "https://github.com/retropex/datum-gateway-startos",
+      "upstreamRepo": "https://github.com/CONVOYMining/datum_gateway",
+      "osVersion": "0.4.0-beta.10",
+      "license": "mit",
+      "summary": "Make block templates and issue work to your miners"
+    },
+    {
+      "packageId": "datum",
+      "title": "Datum Gateway",
+      "versionKey": "#pow:0.4.1:24",
+      "flavor": "pow",
+      "version": "0.4.1",
+      "revision": 24,
+      "proposed": false,
+      "categories": [
+        "bitcoin"
+      ],
+      "proposedCategoryIds": [],
+      "hardware": [
+        {
+          "device": [],
+          "ram": null,
+          "arch": null
+        }
+      ],
+      "urls": [
+        "https://github.com/Horizon-btc/datum-gateway-startos/releases/download/pow_0.4.1_24/datum.s9pk"
+      ],
+      "commitment": {
+        "rootSighash": "9mv8IvzzsIuC/A0em2vipEAH1536xUMaUSwy9+v0qW4",
+        "rootMaxsize": 515
+      },
+      "publishedAt": "2026-09-29T08:39:26.591361996Z",
+      "packageRepo": "https://github.com/horizon-btc/datum-gateway-startos",
+      "upstreamRepo": "https://github.com/CONVOYMining/datum_gateway",
+      "osVersion": "0.4.0-beta.10",
+      "license": "mit",
+      "summary": "Make block templates and issue work to your miners"
+    },
+    {
+      "packageId": "datum",
+      "title": "Datum Gateway",
+      "versionKey": "#pow:0.4.1:25",
+      "flavor": "pow",
+      "version": "0.4.1",
+      "revision": 25,
+      "proposed": false,
+      "categories": [
+        "bitcoin"
+      ],
+      "proposedCategoryIds": [],
+      "hardware": [
+        {
+          "device": [],
+          "ram": null,
+          "arch": null
+        }
+      ],
+      "urls": [
+        "https://github.com/Horizon-btc/datum-gateway-startos/releases/download/pow_0.4.1_25/datum.s9pk"
+      ],
+      "commitment": {
+        "rootSighash": "e+GB+D6VWw4NhgkwbiDHJHp/r1ULMuyuLnppt5Rml10",
+        "rootMaxsize": 515
+      },
+      "publishedAt": "2026-10-07T10:39:32.409734608Z",
+      "packageRepo": "https://github.com/horizon-btc/datum-gateway-startos",
+      "upstreamRepo": "https://github.com/CONVOYMining/datum_gateway",
+      "osVersion": "0.4.0-beta.10",
+      "license": "mit",
+      "summary": "Make block templates and issue work to your miners"
+    },
+    {
+      "packageId": "datum",
+      "title": "Datum Gateway",
+      "versionKey": "#pow:0.4.1:26",
+      "flavor": "pow",
+      "version": "0.4.1",
+      "revision": 26,
+      "proposed": true,
+      "categories": [
+        "bitcoin"
+      ],
+      "proposedCategoryIds": [
+        "mining"
+      ],
+      "hardware": [
+        {
+          "device": [],
+          "ram": null,
+          "arch": null
+        }
+      ],
+      "urls": [
+        "https://github.com/Horizon-btc/datum-gateway-startos/releases/download/pow_0.4.1_26/datum.s9pk"
+      ],
+      "commitment": {
+        "rootSighash": "lpahg4QeqPE/xAVufmhVdEDb2eh2vGA55lWys6u8QrQ",
+        "rootMaxsize": 515
+      },
+      "publishedAt": "2026-10-07T14:28:18.145340636Z",
+      "packageRepo": "https://github.com/horizon-btc/datum-gateway-startos",
+      "upstreamRepo": "https://github.com/CONVOYMining/datum_gateway",
+      "osVersion": "0.4.0-beta.10",
+      "license": "mit",
+      "summary": "Make block templates and issue work to your miners"
+    },
+    {
+      "packageId": "fulcrum",
+      "title": "Fulcrum (BLAKE2b)",
+      "versionKey": "#blake:2.1.2:0",
+      "flavor": "blake",
+      "version": "2.1.2",
+      "revision": 0,
+      "proposed": false,
+      "categories": [],
+      "proposedCategoryIds": [],
+      "hardware": [
+        {
+          "device": [],
+          "ram": null,
+          "arch": null
+        }
+      ],
+      "urls": [
+        "https://github.com/privkeyio/fulcrum-startos/releases/download/v2.1.2-blake_2/fulcrum.s9pk"
+      ],
+      "commitment": {
+        "rootSighash": "E79XEcWkp7BElJ3CKnN8A9EPaC7o2Gn/4MTHEnnLO+M",
+        "rootMaxsize": 515
+      },
+      "publishedAt": "2026-09-06T06:37:34.769517234Z",
+      "packageRepo": "https://github.com/privkeyio/fulcrum-startos",
+      "upstreamRepo": "https://github.com/privkeyio/Fulcrum",
+      "osVersion": "0.4.0-beta.10",
+      "license": "MIT",
+      "summary": "A fast and efficient Electrum server that connects to your Bitcoin node."
+    },
+    {
+      "packageId": "fulcrum",
+      "title": "Fulcrum (BLAKE2b)",
+      "versionKey": "#blake:2.1.3:1",
+      "flavor": "blake",
+      "version": "2.1.3",
+      "revision": 1,
+      "proposed": true,
+      "categories": [],
+      "proposedCategoryIds": [
+        "indexers"
+      ],
+      "hardware": [
+        {
+          "device": [],
+          "ram": null,
+          "arch": null
+        }
+      ],
+      "urls": [
+        "https://github.com/privkeyio/fulcrum-startos/releases/download/v2.1.3-blake_1/fulcrum.s9pk"
+      ],
+      "commitment": {
+        "rootSighash": "MzjCQPvuJvz6dvNn7xDgrn/kHEIT01myTn0ipU+ahl4",
+        "rootMaxsize": 515
+      },
+      "publishedAt": "2026-10-06T20:29:33.723552203Z",
+      "packageRepo": "https://github.com/privkeyio/fulcrum-startos",
+      "upstreamRepo": "https://github.com/privkeyio/Fulcrum",
+      "osVersion": "0.4.0-beta.10",
+      "license": "MIT",
+      "summary": "A fast and efficient Electrum server that connects to your Bitcoin node."
+    },
+    {
+      "packageId": "mempool",
+      "title": "Mempool Guide",
+      "versionKey": "#mpg:3.4:2",
+      "flavor": "mpg",
+      "version": "3.4",
+      "revision": 2,
+      "proposed": false,
+      "categories": [
+        "bitcoin"
+      ],
+      "proposedCategoryIds": [],
+      "hardware": [
+        {
+          "device": [],
+          "ram": null,
+          "arch": null
+        }
+      ],
+      "urls": [
+        "https://github.com/Retropex/mempool-startos/releases/download/v3.4-beta-0.4.0-1/mempool.s9pk"
+      ],
+      "commitment": {
+        "rootSighash": "aWwxo1p0tRHjb1zcKYJY+9HS6s5NVwlYke75gErnFtY",
+        "rootMaxsize": 450
+      },
+      "publishedAt": "2026-05-01T12:08:19.882021683Z",
+      "packageRepo": "https://github.com/retropex/mempool-startos",
+      "upstreamRepo": "https://github.com/mempool/mempool",
+      "osVersion": "0.4.0-beta.6",
+      "license": "AGPL",
+      "summary": "Explore Bitcoin"
+    },
+    {
+      "packageId": "mempool",
+      "title": "Mempool Guide",
+      "versionKey": "#mpg:3.4:3",
+      "flavor": "mpg",
+      "version": "3.4",
+      "revision": 3,
+      "proposed": false,
+      "categories": [
+        "bitcoin"
+      ],
+      "proposedCategoryIds": [],
+      "hardware": [
+        {
+          "device": [],
+          "ram": null,
+          "arch": null
+        }
+      ],
+      "urls": [
+        "https://github.com/Retropex/mempool-startos/releases/download/v3.4-beta2-0.4.0/mempool.s9pk"
+      ],
+      "commitment": {
+        "rootSighash": "0Xj66OAWESYElM3OxzjYRJ+wgq/dToeuTRqkzdhC/Bg",
+        "rootMaxsize": 515
+      },
+      "publishedAt": "2026-06-05T14:00:32.247771453Z",
+      "packageRepo": "https://github.com/retropex/mempool-startos",
+      "upstreamRepo": "https://github.com/mempool/mempool",
+      "osVersion": "0.4.0-beta.9",
+      "license": "AGPL",
+      "summary": "Explore Bitcoin"
+    },
+    {
+      "packageId": "mempool",
+      "title": "Mempool Guide",
+      "versionKey": "#mpg:3.4:4",
+      "flavor": "mpg",
+      "version": "3.4",
+      "revision": 4,
+      "proposed": false,
+      "categories": [
+        "bitcoin"
+      ],
+      "proposedCategoryIds": [],
+      "hardware": [
+        {
+          "device": [],
+          "ram": null,
+          "arch": null
+        }
+      ],
+      "urls": [
+        "https://github.com/Retropex/mempool-startos/releases/download/v3.4-beta3/mempool.s9pk"
+      ],
+      "commitment": {
+        "rootSighash": "yvr/Mw+dFQ3wjjf/5dg+HllFTYIZurMWXVGqejGy6hM",
+        "rootMaxsize": 515
+      },
+      "publishedAt": "2026-09-02T11:12:08.252719345Z",
+      "packageRepo": "https://github.com/retropex/mempool-startos",
+      "upstreamRepo": "https://github.com/mempool/mempool",
+      "osVersion": "0.4.0-beta.9",
+      "license": "AGPL",
+      "summary": "Explore Bitcoin"
+    },
+    {
+      "packageId": "mempool",
+      "title": "Mempool Guide",
+      "versionKey": "#mpg:3.4:5",
+      "flavor": "mpg",
+      "version": "3.4",
+      "revision": 5,
+      "proposed": false,
+      "categories": [
+        "bitcoin"
+      ],
+      "proposedCategoryIds": [],
+      "hardware": [
+        {
+          "device": [],
+          "ram": null,
+          "arch": null
+        }
+      ],
+      "urls": [
+        "https://github.com/Retropex/mempool-startos/releases/download/v3.4-beta3-1/mempool.s9pk"
+      ],
+      "commitment": {
+        "rootSighash": "ySoHEzqg75HlicYNRiFWRHJ53DOhjSNlva/ZkSHyEq4",
+        "rootMaxsize": 515
+      },
+      "publishedAt": "2026-09-05T10:23:51.869184947Z",
+      "packageRepo": "https://github.com/retropex/mempool-startos",
+      "upstreamRepo": "https://github.com/mempool/mempool",
+      "osVersion": "0.4.0-beta.9",
+      "license": "AGPL",
+      "summary": "Explore Bitcoin"
+    },
+    {
+      "packageId": "mempool",
+      "title": "Mempool Guide",
+      "versionKey": "#mpg:3.4:6",
+      "flavor": "mpg",
+      "version": "3.4",
+      "revision": 6,
+      "proposed": false,
+      "categories": [
+        "bitcoin"
+      ],
+      "proposedCategoryIds": [],
+      "hardware": [
+        {
+          "device": [],
+          "ram": null,
+          "arch": null
+        }
+      ],
+      "urls": [
+        "https://github.com/Retropex/mempool-startos/releases/download/v3.4-beta3-2/mempool.s9pk"
+      ],
+      "commitment": {
+        "rootSighash": "qen/9PtJj6Ep+EwAQv+0xx1D9CMZd+cPExGtQGudTwY",
+        "rootMaxsize": 515
+      },
+      "publishedAt": "2026-09-06T07:55:31.251140221Z",
+      "packageRepo": "https://github.com/retropex/mempool-startos",
+      "upstreamRepo": "https://github.com/mempool/mempool",
+      "osVersion": "0.4.0-beta.9",
+      "license": "AGPL",
+      "summary": "Explore Bitcoin"
+    },
+    {
+      "packageId": "mempool",
+      "title": "Mempool Guide",
+      "versionKey": "#mpg:3.4:7",
+      "flavor": "mpg",
+      "version": "3.4",
+      "revision": 7,
+      "proposed": false,
+      "categories": [
+        "bitcoin"
+      ],
+      "proposedCategoryIds": [],
+      "hardware": [
+        {
+          "device": [],
+          "ram": null,
+          "arch": null
+        }
+      ],
+      "urls": [
+        "https://github.com/Retropex/mempool-startos/releases/download/v3.4-beta3-3/mempool.s9pk"
+      ],
+      "commitment": {
+        "rootSighash": "KR08C804nv1U479Sw4XEjLr4RBqXZmfXcLidRiZ9fq4",
+        "rootMaxsize": 515
+      },
+      "publishedAt": "2026-09-09T17:06:02.477068976Z",
+      "packageRepo": "https://github.com/retropex/mempool-startos",
+      "upstreamRepo": "https://github.com/mempool/mempool",
+      "osVersion": "0.4.0-beta.9",
+      "license": "AGPL",
+      "summary": "Explore Bitcoin"
+    },
+    {
+      "packageId": "mempool",
+      "title": "Mempool Guide",
+      "versionKey": "#mpg:3.4:8",
+      "flavor": "mpg",
+      "version": "3.4",
+      "revision": 8,
+      "proposed": false,
+      "categories": [
+        "bitcoin"
+      ],
+      "proposedCategoryIds": [],
+      "hardware": [
+        {
+          "device": [],
+          "ram": null,
+          "arch": null
+        }
+      ],
+      "urls": [
+        "https://github.com/Retropex/mempool-startos/releases/download/v3.4-beta5/mempool.s9pk"
+      ],
+      "commitment": {
+        "rootSighash": "8ak/+hPVzwdkKsY9S1QXQrmr4qMv6lEx9fgkE1LAZC8",
+        "rootMaxsize": 515
+      },
+      "publishedAt": "2026-09-20T13:03:03.539462373Z",
+      "packageRepo": "https://github.com/retropex/mempool-startos",
+      "upstreamRepo": "https://github.com/mempool/mempool",
+      "osVersion": "0.4.0-beta.9",
+      "license": "AGPL",
+      "summary": "Explore Bitcoin"
+    },
+    {
+      "packageId": "mempool",
+      "title": "Mempool Guide",
+      "versionKey": "#mpg:3.4:9",
+      "flavor": "mpg",
+      "version": "3.4",
+      "revision": 9,
+      "proposed": true,
+      "categories": [
+        "bitcoin"
+      ],
+      "proposedCategoryIds": [
+        "explorers"
+      ],
+      "hardware": [
+        {
+          "device": [],
+          "ram": null,
+          "arch": null
+        }
+      ],
+      "urls": [
+        "https://github.com/Retropex/mempool-startos/releases/download/v3.4-beta6/mempool.s9pk"
+      ],
+      "commitment": {
+        "rootSighash": "b6DsqKLWTbqWhb7vjOPBcPhDMPDsZwOFqGxiopSd2FI",
+        "rootMaxsize": 515
+      },
+      "publishedAt": "2026-09-24T09:52:20.752010059Z",
+      "packageRepo": "https://github.com/retropex/mempool-startos",
+      "upstreamRepo": "https://github.com/mempool/mempool",
+      "osVersion": "0.4.0-beta.9",
+      "license": "AGPL",
+      "summary": "Explore Bitcoin"
+    }
+  ]
+}

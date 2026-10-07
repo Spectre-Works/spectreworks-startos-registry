@@ -1,0 +1,17 @@
+services:
+  registry:
+    # Digest of ghcr.io/start9labs/startos-registry:v1.1.1 (linux/arm64), pulled 2026-10-07.
+    image: ghcr.io/start9labs/startos-registry@sha256:5eb441583842b80792b81048eb2658da932b8452bd26a85b6d41bed883373768
+    container_name: startos-registry
+    command:
+      - --listen
+      - 0.0.0.0:5959
+      - --hostname
+      - registry.startos.spectreworks.io
+      - --datadir
+      - /var/lib/startos
+    ports:
+      - "127.0.0.1:5959:5959"
+    volumes:
+      - /srv/startos-registry/data:/var/lib/startos
+    restart: unless-stopped

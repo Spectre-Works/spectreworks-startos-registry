@@ -1,0 +1,12 @@
+# The live tunnel is remotely managed. This file is not installed on bitcoin.local.
+# Tunnel name: spectreworks-btcpay
+# Tunnel ID: 1915bd31-93b1-4eec-9eb1-246cc22cffe6
+# Connector unit: cloudflared-btcpay-xbt.service
+#
+# Ingress after the registry route was added. pay.spectreworks.io was left as it was.
+ingress:
+  - hostname: pay.spectreworks.io
+    service: http://127.0.0.1:23000
+  - hostname: registry.startos.spectreworks.io
+    service: http://127.0.0.1:5959
+  - service: http_status:404

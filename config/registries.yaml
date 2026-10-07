@@ -1,0 +1,5 @@
+source:
+  mempool_guide: https://start9.mempool.guide
+
+destination:
+  production: https://registry.startos.spectreworks.io

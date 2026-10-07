@@ -1,0 +1,12 @@
+*.pem
+*.key
+.env
+.env.*
+.startos/
+secrets/
+registry.db
+metrics.db
+admin.log
+*.tar
+*.tar.gz
+*.tar.zst
