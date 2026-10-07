@@ -7,11 +7,20 @@ services:
       - --listen
       - 0.0.0.0:5959
       - --hostname
-      - registry.startos.spectreworks.io
+      - startos-registry.spectreworks.io
       - --datadir
       - /var/lib/startos
     ports:
       - "127.0.0.1:5959:5959"
     volumes:
       - /srv/startos-registry/data:/var/lib/startos
+      # Docker 20.10 keeps 127.0.0.11 on this network. This file is the container resolver.
+      - /srv/startos-registry/resolv.conf:/etc/resolv.conf:ro
     restart: unless-stopped
+
+networks:
+  default:
+    ipam:
+      config:
+        - subnet: 172.18.0.0/16
+          gateway: 172.18.0.1

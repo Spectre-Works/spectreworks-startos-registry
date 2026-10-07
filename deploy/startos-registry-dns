@@ -1,0 +1,127 @@
+#!/usr/bin/env python3
+"""Answer DNS for the StartOS registry container using the host resolver.
+
+Docker's embedded DNS and Tailscale's resolver are not usable from this
+container. The host itself can resolve external names, so the container is
+pointed at this listener on the compose-network gateway.
+"""
+import socket
+import struct
+import threading
+
+LISTEN = ("172.18.0.1", 53)
+TTL = 60
+
+
+def question_offset(packet):
+    offset = 12
+    while offset < len(packet):
+        length = packet[offset]
+        if length == 0:
+            return offset + 1
+        if length & 0xC0 == 0xC0:
+            return offset + 2
+        offset += 1 + length
+    raise ValueError("truncated question")
+
+
+def decode_name(packet, offset):
+    labels = []
+    hops = 0
+    while True:
+        length = packet[offset]
+        if length == 0:
+            return b".".join(labels).decode("ascii", "replace")
+        if length & 0xC0 == 0xC0:
+            pointer = ((length & 0x3F) << 8) | packet[offset + 1]
+            hops += 1
+            if hops > 8:
+                raise ValueError("compression loop")
+            offset = pointer
+            continue
+        offset += 1
+        labels.append(packet[offset : offset + length])
+        offset += length
+
+
+def answer(qtype, address):
+    if qtype == 1:
+        raw = socket.inet_aton(address)
+    else:
+        raw = socket.inet_pton(socket.AF_INET6, address)
+    # Name pointer to the question name at offset 12.
+    return struct.pack("!HHHIH", 0xC00C, qtype, 1, TTL, len(raw)) + raw
+
+
+def lookup(name, qtype):
+    # This host has no working IPv6 path. Answering AAAA by calling the system
+    # resolver can stall forever, which stalls every parallel A lookup too.
+    if qtype != 1:
+        return []
+    try:
+        infos = socket.getaddrinfo(name, None, socket.AF_INET, socket.SOCK_STREAM)
+    except socket.gaierror:
+        return []
+    found = []
+    for info in infos:
+        address = info[4][0]
+        if address not in found:
+            found.append(address)
+    return found
+
+
+def respond(packet):
+    if len(packet) < 12:
+        return None
+    txid = packet[:2]
+    qdcount = struct.unpack("!H", packet[4:6])[0]
+    if qdcount != 1:
+        flags = struct.pack("!H", 0x8181)  # FORMERR
+        return txid + flags + packet[4:6] + b"\x00\x00\x00\x00\x00\x00" + packet[12:]
+    try:
+        qend = question_offset(packet)
+        qtype, qclass = struct.unpack("!HH", packet[qend : qend + 4])
+        name = decode_name(packet, 12)
+    except Exception:
+        flags = struct.pack("!H", 0x8181)
+        return txid + flags + b"\x00\x00\x00\x00\x00\x00\x00\x00"
+    question = packet[12 : qend + 4]
+    records = []
+    if qclass == 1 and qtype in (1, 28):
+        records = lookup(name, qtype)
+    body = b"".join(answer(qtype, item) for item in records)
+    # Header is 12 bytes: id, flags, qdcount, ancount, nscount, arcount.
+    # NOERROR even when this address family has no records. NXDOMAIN would
+    # hide a valid answer of the other family.
+    header = txid + struct.pack("!HHHHH", 0x8180, 1, len(records), 0, 0)
+    return header + question + body
+
+
+def handle(sock, packet, sender):
+    try:
+        reply = respond(packet)
+    except Exception as exc:
+        print(f"error from {sender}: {exc}", flush=True)
+        return
+    if reply is None:
+        print(f"ignored from {sender}", flush=True)
+        return
+    try:
+        sock.sendto(reply, sender)
+        ancount = int.from_bytes(reply[6:8], "big")
+        print(f"replied {sender[0]} ancount={ancount} bytes={len(reply)}", flush=True)
+    except OSError as exc:
+        print(f"send failed {sender}: {exc}", flush=True)
+
+
+def main():
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    sock.bind(LISTEN)
+    while True:
+        packet, sender = sock.recvfrom(4096)
+        threading.Thread(target=handle, args=(sock, packet, sender), daemon=True).start()
+
+
+if __name__ == "__main__":
+    main()

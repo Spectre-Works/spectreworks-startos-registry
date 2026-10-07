@@ -6,13 +6,15 @@ root=$(cd "$(dirname "$0")/.." && pwd)
 id=${1:?package id}
 version=${2:?version}
 source=https://start9.mempool.guide
-dest=https://registry.startos.spectreworks.io
+dest=https://startos-registry.spectreworks.io
 start-cli registry package promote --from "${source}" --to "${dest}" "${id}" "${version}"
-entry=$(start-cli --registry "${dest}" registry package get "${id}" full --format json)
-python3 - "${root}/state/catalog-lock.json" "${id}" "${version}" "${source}" "${entry}" << 'PY'
+tmp=$(mktemp)
+trap 'rm -f "$tmp"' EXIT
+start-cli --registry "${dest}" registry package get "${id}" full --format json > "${tmp}"
+python3 - "${root}/state/catalog-lock.json" "${id}" "${version}" "${source}" "${tmp}" << 'PY'
 import json, sys, datetime
-lock_path, package_id, version, source, raw = sys.argv[1:]
-entry = json.loads(raw)
+lock_path, package_id, version, source, entry_path = sys.argv[1:]
+entry = json.load(open(entry_path))
 lock = json.load(open(lock_path))
 urls = []
 commitment = None

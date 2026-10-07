@@ -1,0 +1,14 @@
+[Unit]
+Description=DNS resolver for the StartOS registry container
+After=docker.service network-online.target
+Wants=network-online.target
+
+[Service]
+# The compose network gateway is created when the registry container starts.
+ExecStartPre=/bin/sh -c 'i=0; while [ "$$i" -lt 30 ]; do ip -4 addr show | grep -q "inet 172.18.0.1/" && exit 0; i=$$((i+1)); sleep 2; done; echo "172.18.0.1 is not up" >&2; exit 1'
+ExecStart=/usr/bin/python3 /usr/local/sbin/startos-registry-dns
+Restart=on-failure
+RestartSec=2s
+
+[Install]
+WantedBy=multi-user.target

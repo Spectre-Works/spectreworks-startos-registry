@@ -7,6 +7,6 @@
 ingress:
   - hostname: pay.spectreworks.io
     service: http://127.0.0.1:23000
-  - hostname: registry.startos.spectreworks.io
+  - hostname: startos-registry.spectreworks.io
     service: http://127.0.0.1:5959
   - service: http_status:404

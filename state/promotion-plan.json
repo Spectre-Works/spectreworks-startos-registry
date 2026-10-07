@@ -1,8 +1,8 @@
 {
   "sourceRegistry": "https://start9.mempool.guide",
-  "destinationRegistry": "https://registry.startos.spectreworks.io",
+  "destinationRegistry": "https://startos-registry.spectreworks.io",
   "inspectedAt": "2026-10-07T22:03:38Z",
-  "status": "awaiting-operator-approval",
+  "status": "promoted",
   "proposal": "Promote only the newest revision of each package. Leave older revisions unpromoted. Do not publish StartOS images.",
   "proposedCategories": [
     {
@@ -902,5 +902,6 @@
       "license": "AGPL",
       "summary": "Explore Bitcoin"
     }
-  ]
+  ],
+  "promotedAt": "2026-10-07T22:39:45Z"
 }

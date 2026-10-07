@@ -1,4 +1,75 @@
 {
-  "registry": "https://registry.startos.spectreworks.io",
-  "packages": []
+  "registry": "https://startos-registry.spectreworks.io",
+  "packages": [
+    {
+      "packageId": "datum",
+      "version": "#pow:0.4.1:26",
+      "sourceRegistry": "https://start9.mempool.guide",
+      "urls": [
+        "https://github.com/Horizon-btc/datum-gateway-startos/releases/download/pow_0.4.1_26/datum.s9pk"
+      ],
+      "commitment": {
+        "rootSighash": "lpahg4QeqPE/xAVufmhVdEDb2eh2vGA55lWys6u8QrQ",
+        "rootMaxsize": 515
+      },
+      "approvedAt": "2026-10-07T22:39:16Z",
+      "notes": ""
+    },
+    {
+      "packageId": "fulcrum",
+      "version": "#blake:2.1.3:1",
+      "sourceRegistry": "https://start9.mempool.guide",
+      "urls": [
+        "https://github.com/privkeyio/fulcrum-startos/releases/download/v2.1.3-blake_1/fulcrum.s9pk"
+      ],
+      "commitment": {
+        "rootSighash": "MzjCQPvuJvz6dvNn7xDgrn/kHEIT01myTn0ipU+ahl4",
+        "rootMaxsize": 515
+      },
+      "approvedAt": "2026-10-07T22:39:31Z",
+      "notes": ""
+    },
+    {
+      "packageId": "canary",
+      "version": "#blake:1.7.0:0",
+      "sourceRegistry": "https://start9.mempool.guide",
+      "urls": [
+        "https://github.com/privkeyio/canary-startos/releases/download/v1.7.0-blake/canary.s9pk"
+      ],
+      "commitment": {
+        "rootSighash": "4I1jVGHmxNrALX0096c1cGxRSs9XQk1xS/L90FuEDNA",
+        "rootMaxsize": 515
+      },
+      "approvedAt": "2026-10-07T22:39:34Z",
+      "notes": ""
+    },
+    {
+      "packageId": "bitcoind",
+      "version": "#knots:29.4.2:4",
+      "sourceRegistry": "https://start9.mempool.guide",
+      "urls": [
+        "https://github.com/Retropex/knots-startos/releases/download/v29.4.2.knots20260508-1/bitcoind.s9pk"
+      ],
+      "commitment": {
+        "rootSighash": "U18GFkUwKHYb3dklATMjTAMFbnKgzrbJYYxjQWc3YXQ",
+        "rootMaxsize": 515
+      },
+      "approvedAt": "2026-10-07T22:39:37Z",
+      "notes": ""
+    },
+    {
+      "packageId": "mempool",
+      "version": "#mpg:3.4:9",
+      "sourceRegistry": "https://start9.mempool.guide",
+      "urls": [
+        "https://github.com/Retropex/mempool-startos/releases/download/v3.4-beta6/mempool.s9pk"
+      ],
+      "commitment": {
+        "rootSighash": "b6DsqKLWTbqWhb7vjOPBcPhDMPDsZwOFqGxiopSd2FI",
+        "rootMaxsize": 515
+      },
+      "approvedAt": "2026-10-07T22:39:45Z",
+      "notes": ""
+    }
+  ]
 }
