@@ -172,12 +172,35 @@ class StateTests(unittest.TestCase):
     def test_successful_delivery_is_not_repeated(self):
         self.state.event("held", "example", {"message": "example", "link": ""})
         response = unittest.mock.MagicMock()
-        response.__enter__.return_value.read.return_value = b'{"id":"ack"}'
+        response.__enter__.return_value.read.return_value = b'{"id":"ack","event":"message","topic":"example"}'
         with patch.dict(m.os.environ, {"NTFY_URL": "https://ntfy.sh/example"}), patch.object(
                 m.urllib.request, "urlopen", return_value=response) as post:
             self.monitor.flush_notifications()
             self.monitor.flush_notifications()
         self.assertEqual(post.call_count, 1)
+        receipt = self.state.db.execute("SELECT receipt FROM events").fetchone()[0]
+        self.assertEqual(json.loads(receipt)["topic"], "example")
+
+    def test_wrong_topic_acknowledgement_remains_pending(self):
+        self.state.event("held", "example", {"message": "example", "link": ""})
+        response = unittest.mock.MagicMock()
+        response.__enter__.return_value.read.return_value = b'{"id":"ack","event":"message","topic":"wrong"}'
+        with patch.dict(m.os.environ, {"NTFY_URL": "https://ntfy.sh/example"}), patch.object(
+                m.urllib.request, "urlopen", return_value=response):
+            self.monitor.flush_notifications()
+        self.assertEqual(self.state.db.execute("SELECT delivered,receipt FROM events").fetchone(), (None, None))
+
+    def test_success_notice_has_success_title_and_priority(self):
+        self.state.event("updated", "example", {"message": "app updated", "link": ""})
+        response = unittest.mock.MagicMock()
+        response.__enter__.return_value.read.return_value = b'{"id":"ack","event":"message","topic":"example"}'
+        with patch.dict(m.os.environ, {"NTFY_URL": "https://ntfy.sh/example"}), patch.object(
+                m.urllib.request, "urlopen", return_value=response) as post:
+            self.monitor.flush_notifications()
+        request = post.call_args.args[0]
+        self.assertEqual(request.get_header("Title"), "StartOS: package updated")
+        self.assertEqual(request.get_header("Priority"), "3")
+        self.assertIn("white_check_mark", request.get_header("Tags"))
 
     def test_dry_run_never_enqueues_or_posts(self):
         self.monitor.dry_run = True
@@ -204,6 +227,8 @@ class StateTests(unittest.TestCase):
                                   ("app", "#x:2:0", json.dumps({"assets": meta["s9pks"]}), "pending"))
         self.monitor.reconcile(catalog({"app": ("#x:2:0", meta)}))
         self.assertEqual(self.state.db.execute("SELECT status FROM promotions").fetchone()[0], "verified")
+        self.monitor.reconcile(catalog({"app": ("#x:2:0", meta)}))
+        self.assertEqual(self.state.db.execute("SELECT count(*) FROM events WHERE kind='updated'").fetchone()[0], 1)
 
     def test_pending_mismatch_holds(self):
         with self.state.db:
@@ -224,6 +249,9 @@ class StateTests(unittest.TestCase):
         self.assertEqual(cli.call_args.args[:4], ("registry", "package", "add", "/verified/package.s9pk"))
         self.assertTrue(cli.call_args.kwargs["signed"])
         self.assertEqual(self.state.db.execute("SELECT status FROM promotions").fetchone()[0], "verified")
+        kind, body = self.state.db.execute("SELECT kind,body FROM events").fetchone()
+        self.assertEqual(kind, "updated")
+        self.assertIn("#x:1:0 -> #x:2:0", json.loads(body)["message"])
 
     def test_concurrent_catalog_change_holds_before_signing(self):
         meta = {"s9pks": []}
@@ -233,6 +261,17 @@ class StateTests(unittest.TestCase):
             with self.assertRaisesRegex(m.Hold, "catalog changed"):
                 self.monitor.promote("app", "#x:2:0", meta, "source", before)
         self.assertFalse(cli.called)
+        self.assertEqual(self.state.db.execute("SELECT count(*) FROM events WHERE kind='updated'").fetchone()[0], 0)
+
+    def test_failed_destination_verification_sends_no_success(self):
+        meta = {"s9pks": [[{}, {"urls": ["example"], "commitment": {"hash": "original"}}]]}
+        before = catalog({"app": ("#x:1:0", meta)})
+        with patch.object(self.monitor, "verify_downloads", return_value=[]), \
+                patch.object(self.monitor, "index", side_effect=[before, before]), patch.object(self.monitor, "cli"):
+            with self.assertRaisesRegex(m.Hold, "verification failed"):
+                self.monitor.promote("app", "#x:2:0", meta, "source", before)
+        self.assertEqual(self.state.db.execute("SELECT count(*) FROM events WHERE kind='updated'").fetchone()[0], 0)
+        self.assertEqual(self.state.db.execute("SELECT status FROM promotions").fetchone()[0], "pending")
 
 
 class WatchdogTests(unittest.TestCase):
@@ -247,7 +286,7 @@ class WatchdogTests(unittest.TestCase):
 
     def check(self, inactive=False):
         response = unittest.mock.MagicMock()
-        response.__enter__.return_value.read.return_value = b'{"id":"ack"}'
+        response.__enter__.return_value.read.return_value = b'{"id":"ack","event":"message","topic":"example"}'
         with patch.object(sys, "argv", self.argv), patch.object(h.subprocess, "run") as unit, \
                 patch.dict(h.os.environ, {"NTFY_URL": "https://ntfy.sh/example"}), \
                 patch.object(h.urllib.request, "urlopen", return_value=response) as post:

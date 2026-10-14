@@ -10,6 +10,7 @@ import sqlite3
 import subprocess
 import time
 import urllib.request
+import urllib.parse
 
 
 def main():
@@ -25,6 +26,9 @@ def main():
             fingerprint TEXT PRIMARY KEY, kind TEXT NOT NULL, body TEXT NOT NULL,
             created TEXT NOT NULL, delivered TEXT, lease_until REAL NOT NULL DEFAULT 0);
     """)
+    if "receipt" not in {row[1] for row in db.execute("PRAGMA table_info(events)")}:
+        db.execute("ALTER TABLE events ADD COLUMN receipt TEXT")
+        db.commit()
 
     def read(key):
         row = db.execute("SELECT value FROM kv WHERE key=?", (key,)).fetchone()
@@ -63,10 +67,14 @@ def main():
             body = json.loads(raw)
             req = urllib.request.Request(url, data=body["message"].encode(), headers=headers, method="POST")
             with urllib.request.urlopen(req, timeout=30) as response:
-                if not json.loads(response.read(65536)).get("id"):
-                    raise ValueError("ntfy did not acknowledge delivery")
+                result = json.loads(response.read(65536))
+                if (not result.get("id") or result.get("event") != "message" or
+                        result.get("topic") != urllib.parse.urlparse(url).path.strip("/")):
+                    raise ValueError("ntfy did not acknowledge the configured topic")
             with db:
-                db.execute("UPDATE events SET delivered=? WHERE fingerprint=?", (utc.isoformat(), ident))
+                receipt = {k: result.get(k) for k in ("id", "event", "topic", "time")}
+                db.execute("UPDATE events SET delivered=?,receipt=? WHERE fingerprint=?",
+                           (utc.isoformat(), json.dumps(receipt), ident))
         except Exception as error:
             with db:
                 db.execute("UPDATE events SET lease_until=0 WHERE fingerprint=?", (ident,))

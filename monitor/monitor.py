@@ -220,6 +220,9 @@ class State:
         if "lease_until" not in {row[1] for row in self.db.execute("PRAGMA table_info(events)")}:
             self.db.execute("ALTER TABLE events ADD COLUMN lease_until REAL NOT NULL DEFAULT 0")
             self.db.commit()
+        if "receipt" not in {row[1] for row in self.db.execute("PRAGMA table_info(events)")}:
+            self.db.execute("ALTER TABLE events ADD COLUMN receipt TEXT")
+            self.db.commit()
 
     def get(self, key, default=None):
         row = self.db.execute("SELECT value FROM kv WHERE key=?", (key,)).fetchone()
@@ -321,7 +324,8 @@ class Monitor:
         rows = self.state.db.execute(
             "SELECT fingerprint,kind,body FROM events WHERE delivered IS NULL ORDER BY created LIMIT 50").fetchall()
         titles = {"packaging_required": "StartOS: packaging required", "held": "StartOS: update held",
-                  "failure": "StartOS: monitor failure", "unmapped": "StartOS: app needs source mapping"}
+                  "failure": "StartOS: monitor failure", "unmapped": "StartOS: app needs source mapping",
+                  "updated": "StartOS: package updated"}
         for ident, kind, body in rows:
             # The independent watchdog shares this outbox; claim delivery to avoid
             # two healthy processes posting the same alert concurrently.
@@ -333,7 +337,8 @@ class Monitor:
                 continue
             event = json.loads(body)
             headers = {"Title": titles.get(kind, "StartOS registry monitor"),
-                       "Priority": "4" if kind == "failure" else "3", "Tags": "package,warning"}
+                       "Priority": "3" if kind == "updated" else "4",
+                       "Tags": "package,white_check_mark" if kind == "updated" else "package,warning"}
             if event["link"]:
                 headers["Click"] = event["link"]
             if os.environ.get("NTFY_TOKEN"):
@@ -342,10 +347,13 @@ class Monitor:
                 req = urllib.request.Request(url, data=event["message"].encode(), headers=headers, method="POST")
                 with urllib.request.urlopen(req, timeout=30) as r:
                     result = json.loads(r.read(65536))
-                    if not result.get("id"):
-                        raise Hold("ntfy did not acknowledge delivery")
+                    if (not result.get("id") or result.get("event") != "message" or
+                            result.get("topic") != urllib.parse.urlparse(url).path.strip("/")):
+                        raise Hold("ntfy did not acknowledge publication to the configured topic")
                 with self.state.db:
-                    self.state.db.execute("UPDATE events SET delivered=? WHERE fingerprint=?", (now(), ident))
+                    receipt = {k: result.get(k) for k in ("id", "event", "topic", "time")}
+                    self.state.db.execute("UPDATE events SET delivered=?,receipt=? WHERE fingerprint=?",
+                                          (now(), canonical(receipt), ident))
             except Exception:
                 with self.state.db:
                     self.state.db.execute("UPDATE events SET lease_until=0 WHERE fingerprint=?", (ident,))
@@ -424,8 +432,28 @@ class Monitor:
             files.append((path, artifact["urls"]))
         return files
 
+    def complete_promotion(self, row, package_id, version, published, source, previous=None):
+        """Atomically record verification and enqueue a recoverable success notice."""
+        at = now()
+        change = f"{previous} -> {version}" if previous else version
+        body = {"message": f"{package_id}: registry package updated: {change}. "
+                           "Publication and package commitments verified. "
+                           "This updates marketplace availability; installed apps are not upgraded.",
+                "link": self.config["destination"]}
+        identity = [package_id, version, artifact_identity(published)]
+        with self.state.db:
+            self.state.db.execute("UPDATE promotions SET status='verified',updated=? WHERE id=?", (at, row))
+            self.state.db.execute(
+                "INSERT OR IGNORE INTO events(fingerprint,kind,body,created) VALUES (?,?,?,?)",
+                (fingerprint(["updated", identity]), "updated", canonical(body), at))
+            self.state.db.execute("INSERT OR REPLACE INTO kv VALUES ('lastPromotion',?)",
+                                  (canonical({"package": package_id, "version": version,
+                                              "previousVersion": previous, "source": source, "at": at}),))
+
     def promote(self, package_id, version, meta, source, catalog):
-        evidence = {"catalog": fingerprint(catalog), "metadata": fingerprint(meta), "assets": meta["s9pks"]}
+        previous = latest(catalog["packages"][package_id]["versions"], parts(version)["flavor"])
+        evidence = {"catalog": fingerprint(catalog), "metadata": fingerprint(meta), "assets": meta["s9pks"],
+                    "previousVersion": previous}
         with tempfile.TemporaryDirectory(prefix="asset-", dir=self.state.directory) as tmp:
             files = self.verify_downloads(package_id, version, meta, tmp)
             # Detect concurrent operator changes immediately before the signed mutation.
@@ -444,9 +472,7 @@ class Monitor:
         published = result["packages"].get(package_id, {}).get("versions", {}).get(version)
         if not published or artifact_identity(published) != artifact_identity(meta):
             raise Hold("Promotion destination verification failed")
-        with self.state.db:
-            self.state.db.execute("UPDATE promotions SET status='verified',updated=? WHERE id=?", (now(), row))
-        self.state.put("lastPromotion", {"package": package_id, "version": version, "at": now()})
+        self.complete_promotion(row, package_id, version, published, source, previous)
         LOG.info("Promoted and verified %s %s", package_id, version)
         return result
 
@@ -553,7 +579,8 @@ class Monitor:
                             with self.state.db:
                                 row = self.state.db.execute(
                                     "INSERT INTO promotions(package,version,source,evidence,status,created,updated) VALUES (?,?,?,?,?,?,?)",
-                                    (package_id, version, url, canonical({"sha256": asset["digest"], "commitment": commitment}),
+                                    (package_id, version, url, canonical({"sha256": asset["digest"], "commitment": commitment,
+                                                                       "previousVersion": selected[package_id]}),
                                      "pending", now(), now())).lastrowid
                             self.cli("registry", "package", "add", str(path), "--url", url,
                                      registry=self.config["destination"], signed=True, timeout=3600)
@@ -561,8 +588,7 @@ class Monitor:
                             found = catalog["packages"][package_id]["versions"].get(version)
                             if not found or artifact_identity(found) != artifact_identity(meta):
                                 raise Hold("GitHub-only promotion destination verification failed")
-                            with self.state.db:
-                                self.state.db.execute("UPDATE promotions SET status='verified',updated=? WHERE id=?", (now(), row))
+                            self.complete_promotion(row, package_id, version, found, url, selected[package_id])
                             selected[package_id] = version
                             LOG.info("Registered and verified %s %s", package_id, version)
                     except Hold as e:
@@ -571,16 +597,15 @@ class Monitor:
         return catalog
 
     def reconcile(self, catalog):
-        rows = self.state.db.execute("SELECT id,package,version,evidence FROM promotions WHERE status='pending'").fetchall()
-        for row, package, version, evidence in rows:
+        rows = self.state.db.execute("SELECT id,package,version,evidence,source FROM promotions WHERE status='pending' ORDER BY id").fetchall()
+        for row, package, version, evidence, source in rows:
             published = catalog["packages"].get(package, {}).get("versions", {}).get(version)
             expected = json.loads(evidence)
             if published and (("assets" in expected and artifact_identity(published) ==
                                artifact_identity({"s9pks": expected["assets"]})) or
                               ("commitment" in expected and any(a["commitment"] == expected["commitment"]
                                                                for _, a in published["s9pks"]))):
-                with self.state.db:
-                    self.state.db.execute("UPDATE promotions SET status='verified',updated=? WHERE id=?", (now(), row))
+                self.complete_promotion(row, package, version, published, source, expected.get("previousVersion"))
             elif published:
                 raise Hold("Interrupted promotion has conflicting destination commitment: " + package + " " + version)
             else:

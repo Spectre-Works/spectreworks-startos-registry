@@ -106,8 +106,11 @@ wrapper must publish explicit constraints before automatic promotion can be
 established. Do not replace null constraints with `*` just to bypass the gate.
 
 On deployment, DATUM candidates `#pow:0.4.1:27` and `#pow:0.5.0:1` were held
-because `datum -> bitcoind` has no published version range. Both hold alerts
-were acknowledged by ntfy. No application package was promoted during rollout.
+because `datum -> bitcoind` has no published version range. This means
+compatibility is unverified; it is not evidence of a conflicting constraint.
+No application package was promoted during rollout. The notification destination
+was corrected on 2026-10-14 after a one-character topic mismatch was identified;
+both hold notices were republished and the operator confirmed visibility.
 
 For an eligible candidate, all assets are downloaded temporarily (maximum 2 GiB
 per asset), verified against GitHub's digest, and inspected by the native CLI.
@@ -135,9 +138,20 @@ do not upgrade the software on `bitcoin.local` or customer nodes.
 
 Alerts contain the app, upstream or package version, reason, and a release link.
 Unchanged packaging/hold events are deduplicated durably. Source failures notify
-after two consecutive failed checks. Successful publication is audit-log only.
+after two consecutive failed checks. Verified package updates emit a
+`StartOS: package updated` notice with the previous and new versions. This notice
+is queued in the same SQLite transaction that marks publication verified, so an
+interruption cannot lose the success event. Restart reconciliation queues the
+same deduplicated event after confirming an interrupted publication completed.
+No success notice is emitted for an attempted or failed publication.
+Action-required alerts use priority 4; successful updates use priority 3.
 An outbox lease prevents the service and watchdog sending the same queued event
-concurrently. Failed delivery remains pending. A delivery accepted by ntfy but
+concurrently. Failed delivery remains pending. The publisher checks ntfy's
+acknowledged event type and exact topic, and stores the provider message ID,
+topic, and time in the event's `receipt` column. The historical `delivered`
+column means ntfy accepted publication; it does not prove push delivery to a
+device. Check the subscription's exact topic when investigating a missing notice.
+A delivery accepted by ntfy but
 whose response is lost can still be retried; exactly-once HTTP delivery is not
 guaranteed.
 
