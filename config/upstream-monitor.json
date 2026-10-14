@@ -1,0 +1,131 @@
+{
+  "destination": "https://startos-registry.spectreworks.io",
+  "sources": [
+    "https://start9.mempool.guide"
+  ],
+  "cli": "/opt/startos-upstream-monitor/bin/start-cli",
+  "intervalSeconds": 21600,
+  "retrySeconds": 900,
+  "maxAssetBytes": 2147483648,
+  "packages": {
+    "datum": {
+      "flavor": "pow",
+      "upstream": "CONVOYMining/datum_gateway",
+      "metadataRepos": [
+        "horizon-btc/datum-gateway-startos",
+        "CONVOYMining/datum_gateway"
+      ],
+      "assetRepos": [
+        "Horizon-btc/datum-gateway-startos",
+        "CONVOYMining/datum_gateway"
+      ],
+      "trustedSignerKeys": [
+        "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAaMQDHxz0CMxlGm+jKZZhbVt0FKhRQxUWzrO/wR/0bio=\n-----END PUBLIC KEY-----\n",
+        "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAbVfmzJ1gzHB2hocrM5S5H9FHPT62Y+A/4yEMTDEaSvs=\n-----END PUBLIC KEY-----\n"
+      ],
+      "approvedOsVersions": [
+        "0.4.0-beta.10"
+      ],
+      "allowPrereleases": true,
+      "allowGithubOnly": true,
+      "releasePattern": "v(?P<version>\\d+(?:\\.\\d+)+)(?:beta(?:\\d+)?)?",
+      "baselineVersion": "#pow:0.4.1:26",
+      "baselinePublishedAt": "2026-10-07T22:39:16Z"
+    },
+    "fulcrum": {
+      "flavor": "blake",
+      "upstream": "privkeyio/Fulcrum",
+      "metadataRepos": [
+        "privkeyio/fulcrum-startos",
+        "privkeyio/Fulcrum"
+      ],
+      "assetRepos": [
+        "privkeyio/fulcrum-startos",
+        "privkeyio/Fulcrum"
+      ],
+      "trustedSignerKeys": [
+        "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAw7V+U/rpPzNhTKpv6hPHgwL8tJeVN2PlOM3Bk+be+2c=\n-----END PUBLIC KEY-----\n"
+      ],
+      "approvedOsVersions": [
+        "0.4.0-beta.10"
+      ],
+      "allowPrereleases": false,
+      "allowGithubOnly": true,
+      "releasePattern": "v(?P<version>\\d+(?:\\.\\d+)+)-blake(?:-\\d+)?",
+      "baselineVersion": "#blake:2.1.3:1",
+      "baselinePublishedAt": "2026-10-07T22:39:31Z"
+    },
+    "canary": {
+      "flavor": "blake",
+      "upstream": "privkeyio/canary",
+      "metadataRepos": [
+        "privkeyio/canary-startos",
+        "privkeyio/canary"
+      ],
+      "assetRepos": [
+        "privkeyio/canary-startos",
+        "privkeyio/canary"
+      ],
+      "trustedSignerKeys": [
+        "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAw7V+U/rpPzNhTKpv6hPHgwL8tJeVN2PlOM3Bk+be+2c=\n-----END PUBLIC KEY-----\n"
+      ],
+      "approvedOsVersions": [
+        "0.4.0-beta.8"
+      ],
+      "allowPrereleases": false,
+      "allowGithubOnly": true,
+      "releasePattern": "v(?P<version>\\d+(?:\\.\\d+)+)-blake(?:-\\d+)?",
+      "baselineVersion": "#blake:1.7.0:0",
+      "baselinePublishedAt": "2026-10-07T22:39:34Z"
+    },
+    "bitcoind": {
+      "flavor": "knots",
+      "upstream": "bitcoinknots/bitcoin",
+      "metadataRepos": [
+        "bitcoinknots/bitcoin-knots-startos",
+        "bitcoinknots/bitcoin"
+      ],
+      "assetRepos": [
+        "Retropex/knots-startos",
+        "bitcoinknots/bitcoin"
+      ],
+      "trustedSignerKeys": [
+        "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAaMQDHxz0CMxlGm+jKZZhbVt0FKhRQxUWzrO/wR/0bio=\n-----END PUBLIC KEY-----\n",
+        "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAbVfmzJ1gzHB2hocrM5S5H9FHPT62Y+A/4yEMTDEaSvs=\n-----END PUBLIC KEY-----\n"
+      ],
+      "approvedOsVersions": [
+        "0.4.0-beta.10"
+      ],
+      "allowPrereleases": false,
+      "allowGithubOnly": true,
+      "releasePattern": "v(?P<version>\\d+(?:\\.\\d+)+)\\.knots\\d+(?:rc\\d+)?",
+      "baselineVersion": "#knots:29.4.2:4",
+      "baselinePublishedAt": "2026-10-07T22:39:37Z"
+    },
+    "mempool": {
+      "flavor": "mpg",
+      "upstream": "mempool/mempool",
+      "metadataRepos": [
+        "retropex/mempool-startos",
+        "mempool/mempool"
+      ],
+      "assetRepos": [
+        "Retropex/mempool-startos",
+        "mempool/mempool"
+      ],
+      "trustedSignerKeys": [
+        "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAaMQDHxz0CMxlGm+jKZZhbVt0FKhRQxUWzrO/wR/0bio=\n-----END PUBLIC KEY-----\n",
+        "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAbVfmzJ1gzHB2hocrM5S5H9FHPT62Y+A/4yEMTDEaSvs=\n-----END PUBLIC KEY-----\n"
+      ],
+      "approvedOsVersions": [
+        "0.4.0-beta.9"
+      ],
+      "allowPrereleases": true,
+      "allowGithubOnly": true,
+      "releasePattern": "v(?P<version>\\d+(?:\\.\\d+)+(?:-(?:alpha|beta|rc)(?:[.\\d]+)?)?)",
+      "baselineVersion": "#mpg:3.4:9",
+      "baselinePublishedAt": "2026-10-07T22:39:45Z"
+    }
+  },
+  "serviceSignerId": "MJXI3RCSCVBTKD2IICROOPRBWYBVSFM3"
+}

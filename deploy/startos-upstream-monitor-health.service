@@ -1,0 +1,24 @@
+[Unit]
+Description=Check StartOS upstream monitor service and freshness
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=startos-monitor
+Group=startos-monitor
+ExecStart=/usr/bin/python3 /opt/startos-upstream-monitor/monitor/healthcheck.py --config /etc/startos-upstream-monitor/policy.json --state-dir /var/lib/startos-upstream-monitor
+EnvironmentFile=/etc/startos-upstream-monitor/notifications.env
+StateDirectory=startos-upstream-monitor
+StateDirectoryMode=0700
+Environment=PYTHONDONTWRITEBYTECODE=1
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/startos-upstream-monitor
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+CapabilityBoundingSet=
+MemoryMax=128M
+CPUQuota=25%

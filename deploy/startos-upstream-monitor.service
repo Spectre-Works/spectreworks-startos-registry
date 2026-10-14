@@ -1,0 +1,40 @@
+[Unit]
+Description=SPECTRE WORKS StartOS upstream release monitor
+Wants=network-online.target
+After=network-online.target docker.service
+OnFailure=startos-upstream-monitor-health.service
+
+[Service]
+Type=simple
+User=startos-monitor
+Group=startos-monitor
+WorkingDirectory=/opt/startos-upstream-monitor
+ExecStart=/usr/bin/python3 /opt/startos-upstream-monitor/monitor/monitor.py --config /etc/startos-upstream-monitor/policy.json --state-dir /var/lib/startos-upstream-monitor
+EnvironmentFile=/etc/startos-upstream-monitor/notifications.env
+LoadCredential=signing-key:/etc/startos-upstream-monitor/signing-key.pem
+StateDirectory=startos-upstream-monitor
+StateDirectoryMode=0700
+Environment=HOME=/var/lib/startos-upstream-monitor
+Environment=PYTHONDONTWRITEBYTECODE=1
+Restart=on-failure
+RestartSec=60
+TimeoutStopSec=30
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+CapabilityBoundingSet=
+MemoryMax=384M
+CPUQuota=25%
+Nice=10
+TasksMax=64
+
+[Install]
+WantedBy=multi-user.target
