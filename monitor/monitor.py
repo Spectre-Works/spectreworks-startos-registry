@@ -646,10 +646,14 @@ class Monitor:
                 failed.append(package_id)
                 count = self.state.get("failures:" + package_id, 0) + 1
                 self.state.put("failures:" + package_id, count)
+                episode_key = "failureEpisode:" + package_id
+                if count == 1 or not self.state.get(episode_key):
+                    self.state.put(episode_key, now())
                 reason = str(e) if isinstance(e, Hold) else type(e).__name__
                 LOG.error("%s check failed: %s", package_id, reason)
-                if count >= 2:
-                    self.notify("failure", [package_id, reason], f"{package_id}: upstream checks failed for {count} consecutive runs. {reason}.")
+                if count > 3:
+                    self.notify("failure", [package_id, self.state.get(episode_key), reason],
+                                f"{package_id}: upstream checks failed for {count} consecutive runs. {reason}.")
         self.state.put("catalogSnapshot", catalog)
         self.state.put("lastCompleted", now())
         self.state.put("lastResult", {"failedPackages": failed, "dryRun": self.dry_run})
@@ -707,10 +711,13 @@ def main():
         except Exception as e:
             count = state.get("cycleFailures", 0) + 1
             state.put("cycleFailures", count)
+            if count == 1 or not state.get("cycleFailureEpisode"):
+                state.put("cycleFailureEpisode", now())
             reason = str(e) if isinstance(e, Hold) else type(e).__name__
             LOG.error("Cycle failed: %s", reason)
-            if count >= 2:
-                monitor.notify("failure", ["cycle", reason], f"StartOS monitor failed for {count} cycles. {reason}.")
+            if count > 3:
+                monitor.notify("failure", ["cycle", state.get("cycleFailureEpisode"), reason],
+                               f"StartOS monitor failed for {count} consecutive cycles. {reason}.")
             with contextlib.suppress(Exception):
                 monitor.flush_notifications()
         if args.once:

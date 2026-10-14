@@ -274,6 +274,70 @@ class StateTests(unittest.TestCase):
         self.assertEqual(self.state.db.execute("SELECT status FROM promotions").fetchone()[0], "pending")
 
 
+class FailureThresholdTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.state = m.State(self.tmp.name)
+        self.addCleanup(self.state.db.close)
+
+    def count_alerts(self):
+        return self.state.db.execute("SELECT count(*) FROM events WHERE kind='failure'").fetchone()[0]
+
+    def test_app_alerts_on_fourth_failure_and_again_after_recovery(self):
+        config = {"cli": "start-cli", "destination": "https://example.com", "sources": [],
+                  "packages": {"app": {"flavor": "x"}}}
+        monitor = m.Monitor(config, self.state)
+        snapshot = catalog({"app": ("#x:1:0", metadata())})
+        with patch.object(monitor, "index", return_value=snapshot), patch.object(monitor, "flush_notifications"), \
+                patch.object(monitor, "process", side_effect=m.Hold("network unavailable")) as process:
+            for _ in range(3):
+                self.assertFalse(monitor.cycle())
+                self.assertEqual(self.count_alerts(), 0)
+            self.assertFalse(monitor.cycle())
+            self.assertEqual(self.count_alerts(), 1)
+            monitor.cycle()
+            self.assertEqual(self.count_alerts(), 1)
+            process.side_effect = None
+            process.return_value = snapshot
+            self.assertTrue(monitor.cycle())
+            self.assertEqual(self.state.get("failures:app"), 0)
+            process.side_effect = m.Hold("network unavailable")
+            for _ in range(3):
+                monitor.cycle()
+                self.assertEqual(self.count_alerts(), 1)
+            monitor.cycle()
+            self.assertEqual(self.count_alerts(), 2)
+
+    def test_whole_scan_alerts_on_fourth_failure_and_again_after_recovery(self):
+        config = Path(self.tmp.name) / "policy.json"
+        config.write_text('{"cli":"start-cli","destination":"https://example.com"}')
+        argv = ["monitor", "--config", str(config), "--state-dir", self.tmp.name, "--once"]
+        def fail_scan():
+            # A fresh exception models separate process runs without retaining
+            # an old main() traceback and its process-lock file descriptor.
+            raise m.Hold("registry unreachable")
+        with patch.object(sys, "argv", argv), patch.object(m.Monitor, "flush_notifications"), \
+                patch.object(m.Monitor, "cycle", side_effect=fail_scan) as cycle:
+            for _ in range(3):
+                self.assertEqual(m.main(), 1)
+                self.assertEqual(self.count_alerts(), 0)
+            self.assertEqual(m.main(), 1)
+            self.assertEqual(self.count_alerts(), 1)
+            m.main()
+            self.assertEqual(self.count_alerts(), 1)
+            cycle.side_effect = None
+            cycle.return_value = True
+            self.assertEqual(m.main(), 0)
+            self.assertEqual(self.state.get("cycleFailures"), 0)
+            cycle.side_effect = fail_scan
+            for _ in range(3):
+                m.main()
+                self.assertEqual(self.count_alerts(), 1)
+            m.main()
+            self.assertEqual(self.count_alerts(), 2)
+
+
 class WatchdogTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()

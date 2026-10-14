@@ -151,7 +151,11 @@ do not upgrade the software on `bitcoin.local` or customer nodes.
 
 Alerts contain the app, upstream or package version, reason, and a release link.
 Unchanged packaging/hold events are deduplicated durably. Source failures notify
-after two consecutive failed checks. Verified package updates emit a
+after more than three consecutive failed checks (on the fourth failure), for
+either an individual app's upstream check or a failure of the entire scan.
+Successful checks reset the relevant counter. The same failure stays quiet
+within an incident, but a new incident after recovery can alert again.
+Failed checks retry every 15 minutes. Verified package updates emit a
 `StartOS: package updated` notice with the previous and new versions. This notice
 is queued in the same SQLite transaction that marks publication verified, so an
 interruption cannot lose the success event. Restart reconciliation queues the
