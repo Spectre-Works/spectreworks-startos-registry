@@ -112,6 +112,16 @@ No application package was promoted during rollout. The notification destination
 was corrected on 2026-10-14 after a one-character topic mismatch was identified;
 both hold notices were republished and the operator confirmed visibility.
 
+Later on 2026-10-14, the operator explicitly verified compatibility and requested
+publication of DATUM `#pow:0.5.0:1`. That exact version was published after the
+normal source, artifact, commitment, hardware, and migration checks; the prior
+`#pow:0.4.1:26` remains available. The version-specific operator approval,
+candidate/catalog fingerprints, and commitments are recorded in the node's
+SQLite key `compatibilityApproval:datum:#pow:0.5.0:1` and the promotion audit;
+`state/catalog-lock.json` records the publication. The success notice was
+accepted by ntfy on the corrected topic. No dependency ranges were rewritten,
+and future releases remain subject to the normal gate.
+
 For an eligible candidate, all assets are downloaded temporarily (maximum 2 GiB
 per asset), verified against GitHub's digest, and inspected by the native CLI.
 Identity, version, source commitment, migration declaration, and dependencies

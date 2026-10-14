@@ -70,6 +70,20 @@
       },
       "approvedAt": "2026-10-07T22:39:45Z",
       "notes": ""
+    },
+    {
+      "packageId": "datum",
+      "version": "#pow:0.5.0:1",
+      "sourceRegistry": "https://start9.mempool.guide",
+      "urls": [
+        "https://github.com/Horizon-btc/datum-gateway-startos/releases/download/v0.5.0beta/datum.s9pk"
+      ],
+      "commitment": {
+        "rootSighash": "kIhnQE7p2LWfkOUqJHYYAzqs/eUs3C+oADIuDnYnklQ",
+        "rootMaxsize": 515
+      },
+      "approvedAt": "2026-10-14T16:59:03Z",
+      "notes": "Operator stated compatibility was verified and explicitly requested publication. Approved this DATUM version only; normal future-release dependency gates remain enabled. Artifact SHA-256, manifest and source commitment were verified before publication; destination commitment was verified afterward."
     }
   ]
 }
