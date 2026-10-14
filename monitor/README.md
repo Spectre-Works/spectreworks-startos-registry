@@ -36,7 +36,10 @@ The registry daemon and other Bitcoin services are not restarted by this monitor
 - No listener or new firewall port. Outbound HTTPS reaches the public
   destination registry, approved source registries, GitHub, and ntfy.
 - systemd confines filesystem writes to the state directory, removes
-  capabilities, and limits the monitor to 384 MiB, 25% of one CPU, and 64 tasks.
+  capabilities, and caps CPU at 25% of one core and tasks at 64. The unit requests
+  a 384 MiB memory cap, but this node's cgroup controllers are `cpuset cpu io pids`:
+  the memory controller is absent, so `MemoryMax` is not currently enforced.
+  Observed idle monitor RSS after a completed scan was about 60 MiB.
 
 CLI pin: `start-cli 2.3.0`, ARM64 official release package:
 
