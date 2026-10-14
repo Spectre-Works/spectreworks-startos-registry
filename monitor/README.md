@@ -26,6 +26,9 @@ The registry daemon and other Bitcoin services are not restarted by this monitor
   `/etc/startos-upstream-monitor/notifications.env` (root:root, 0600).
   `NTFY_URL` is required; `NTFY_TOKEN` and `GITHUB_TOKEN` are optional.
   The actual topic and tokens are not committed to this repository.
+  `notifications.env.example` is a blank template. Fill it on the deployment
+  host and keep the resulting file root-owned with mode 0600. Environment files
+  and runtime SQLite databases are ignored by Git.
 - Signing key: `/etc/startos-upstream-monitor/signing-key.pem` (root:root,
   0600), exposed only to the monitor through systemd `LoadCredential`.
 - Signer ID: `MJXI3RCSCVBTKD2IICROOPRBWYBVSFM3`,

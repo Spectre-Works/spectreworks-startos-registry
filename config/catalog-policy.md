@@ -1,6 +1,6 @@
 # Catalog policy
 
-Spectre Works signs a package commitment when that package is promoted into `https://startos-registry.spectreworks.io`. Promotion keeps the upstream asset URL. It does not download or rehost the `.s9pk`.
+SPECTRE WORKS signs a package commitment when that package is promoted into `https://startos-registry.spectreworks.io`. Promotion keeps the upstream asset URL. It does not download or rehost the `.s9pk`.
 
 `state/promotion-plan.json` is the inspection of `https://start9.mempool.guide` on 2026-10-07. The approved import is the newest revision of each package only.
 

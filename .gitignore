@@ -2,11 +2,17 @@
 *.key
 .env
 .env.*
+*.env
+!*.env.example
 .startos/
 secrets/
 registry.db
 metrics.db
 admin.log
+*.sqlite
+*.sqlite-*
+*.sqlite3
+*.sqlite3-*
 *.tar
 *.tar.gz
 *.tar.zst

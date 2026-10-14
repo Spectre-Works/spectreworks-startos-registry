@@ -1,6 +1,6 @@
-# Spectre Works StartOS registry
+# SPECTRE WORKS StartOS registry
 
-Management repository for the Spectre Works XBT package registry. Live registry data is not stored here.
+Management repository for the SPECTRE WORKS XBT package registry. Live registry data is not stored here.
 
 ## Where things run
 
@@ -14,6 +14,10 @@ The admin private key stays at `~/.startos/id.key.pem` on the workstation. It is
 Public URL:
 
 `https://startos-registry.spectreworks.io`
+
+Description: `Curated StartOS packages for the Bitcoin (XBT) network, maintained by SPECTRE WORKS.`
+
+The registry icon is `deploy/registry-icon.png`, made from the SPECTRE WORKS emblem in the bitcoinblake2bmining.com brand assets.
 
 The registry daemon listens only on `127.0.0.1:5959` inside Docker on `bitcoin.local`. Cloudflare Tunnel is the public ingress. There is no extra reverse proxy and no router port forward.
 
@@ -61,13 +65,13 @@ Universal SSL on the free `spectreworks.io` zone covers `*.spectreworks.io`. Thi
 
 ## Administrator
 
-Signer ID `HDV3ZGRM5I4QNWBUGY3ZCODIACDJOHSO`, name Spectre Works Release Administrator, contact `mailto:contact@spectreworks.io`.
+Signer ID `HDV3ZGRM5I4QNWBUGY3ZCODIACDJOHSO`, name SPECTRE WORKS Release Administrator, contact `mailto:contact@spectreworks.io`.
 
 ## Catalog
 
 `state/source-index.json` is the package index from `https://start9.mempool.guide`. `state/promotion-plan.json` is the approved import. `state/catalog-lock.json` records each promoted version.
 
-See `config/catalog-policy.md`. Promotion endorses that package commitment with the Spectre Works key.
+See `config/catalog-policy.md`. Promotion endorses that package commitment with the SPECTRE WORKS key.
 
 ```bash
 scripts/promote-package.sh <package-id> <version-key>
@@ -76,6 +80,17 @@ scripts/promote-package.sh <package-id> <version-key>
 Quote version keys. They contain `#`.
 
 This registry does not publish StartOS operating-system updates.
+
+## Upstream monitoring
+
+The persistent release monitor on `bitcoin.local` checks registered apps every
+six hours, publishes verified compatible packages, and sends notifications for
+packaging needs, held updates, failures, and successful updates. See
+[the monitor runbook](monitor/README.md).
+
+Set `NTFY_URL` in the node's protected notification environment file. The public
+repository includes only a [blank template](monitor/notifications.env.example);
+the real destination and credentials remain on the deployment host.
 
 ## Hookup
 
