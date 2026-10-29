@@ -84,6 +84,48 @@
       },
       "approvedAt": "2026-10-14T16:59:03Z",
       "notes": "Operator stated compatibility was verified and explicitly requested publication. Approved this DATUM version only; normal future-release dependency gates remain enabled. Artifact SHA-256, manifest and source commitment were verified before publication; destination commitment was verified afterward."
+    },
+    {
+      "packageId": "bitcoind",
+      "version": "#knots:29.4.3:1",
+      "sourceRegistry": "https://start9.mempool.guide",
+      "urls": [
+        "https://github.com/Horizon-btc/knots-startos/releases/download/v29.4.3.knots20260508/bitcoind.s9pk"
+      ],
+      "commitment": {
+        "rootSighash": "wGHiDw5oj0a+NuxH90FnTPA9Crw2gMwnisMFDMJRN5E",
+        "rootMaxsize": 515
+      },
+      "approvedAt": "2026-10-29T17:50:13.935342+00:00",
+      "notes": "Operator explicitly requested bypass of compatibility holds and publication on 2026-10-29. Bypassed: StartOS requirement change, Asset repository changed to Horizon-btc/knots-startos, Narrower hardware declaration, Unknown reverse dependency ranges. Artifact digests, commitments, identity and migration verified; compatibility not certified."
+    },
+    {
+      "packageId": "canary",
+      "version": "#blake:1.7.0:1",
+      "sourceRegistry": "https://start9.mempool.guide",
+      "urls": [
+        "https://github.com/privkeyio/canary-startos/releases/download/v1.7.0-blake.1/canary.s9pk"
+      ],
+      "commitment": {
+        "rootSighash": "7KJtO5gBEGIeqx4kD78GxYxKqkT2zoUPtCzUfj3clVw",
+        "rootMaxsize": 574
+      },
+      "approvedAt": "2026-10-29T17:50:24.391931+00:00",
+      "notes": "Operator explicitly requested bypass of compatibility holds and publication on 2026-10-29. Bypassed: Unknown dependency version ranges. Artifact digests, commitments, identity and migration verified; compatibility not certified."
+    },
+    {
+      "packageId": "datum",
+      "version": "#pow:0.5.0:3",
+      "sourceRegistry": "https://start9.mempool.guide",
+      "urls": [
+        "https://github.com/Horizon-btc/datum-gateway-startos/releases/download/v0.5.0beta-2/datum.s9pk"
+      ],
+      "commitment": {
+        "rootSighash": "/shMbbFewVArVLJGo7DnDbDdE0nyg7fdU5lmgXK5ZfQ",
+        "rootMaxsize": 515
+      },
+      "approvedAt": "2026-10-29T17:50:31.126428+00:00",
+      "notes": "Operator explicitly requested bypass of compatibility holds and publication on 2026-10-29. Bypassed: Unknown dependency version ranges. Artifact digests, commitments, identity and migration verified; compatibility not certified."
     }
   ]
 }

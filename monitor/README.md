@@ -247,3 +247,16 @@ Rollout validation: 34 focused tests passed on the workstation and ARM64 node;
 the native ARM64 CLI inspected and matched DATUM `#pow:0.5.0:1` against source
 metadata without publishing it. Production completed a full scan and delivered
 two hold alerts; unchanged alerts were suppressed on subsequent scans.
+
+## Operator override on 2026-10-29
+
+The operator explicitly requested bypassing the held compatibility requirements
+and publishing Knots `#knots:29.4.3:1`, Canary `#blake:1.7.0:1`, and DATUM
+`#pow:0.5.0:3`. Publication uses the workstation administrator, retains old
+versions and upstream manifests/URLs, and verifies GitHub asset digests, exact
+source commitments, identities, and migration declarations. This is a one-time
+publication override, not runtime compatibility certification or a change to the
+automatic monitor policy. Knots declares StartOS `0.4.0.2`, moves its asset to
+`Horizon-btc/knots-startos`, and narrows its declared hardware architectures.
+Canary and DATUM still lack explicit dependency version ranges. Publication
+records and exact commitments are recorded in `state/catalog-lock.json`.
