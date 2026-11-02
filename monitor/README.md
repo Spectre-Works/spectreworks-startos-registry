@@ -260,3 +260,22 @@ automatic monitor policy. Knots declares StartOS `0.4.0.2`, moves its asset to
 `Horizon-btc/knots-startos`, and narrows its declared hardware architectures.
 Canary and DATUM still lack explicit dependency version ranges. Publication
 records and exact commitments are recorded in `state/catalog-lock.json`.
+
+## Operator override on 2026-11-02
+
+The operator requested the latest packages and explicitly instructed ignoring
+conflicts. A fresh scan of all five registered apps completed without source
+failures. Mempool `#mpg:3.4:10` (`v3.4-beta7`) was the only newer available
+package and was published with the workstation administrator. This one-time
+override bypassed the changed asset repository (`Horizon-btc/mempool-startos`)
+and unknown dependency ranges in the affected dependency component. GitHub's
+SHA-256 digest, exact source commitment, package identity, manifest dependency
+declarations and migration declaration were verified before publication. The
+live destination commitment was verified afterward; all previous versions and
+category assignments were retained. The publication and digest are recorded in
+`state/catalog-lock.json`. Automatic monitor policy remains unchanged; this is
+not runtime compatibility certification.
+
+Fulcrum upstream `v2.1.4-blake` had no matching StartOS package in the checked
+sources, so `#blake:2.1.3:1` remains the latest published package. Knots, Canary
+and DATUM already matched their latest available package versions.

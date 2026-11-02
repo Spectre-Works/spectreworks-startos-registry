@@ -126,6 +126,23 @@
       },
       "approvedAt": "2026-10-29T17:50:31.126428+00:00",
       "notes": "Operator explicitly requested bypass of compatibility holds and publication on 2026-10-29. Bypassed: Unknown dependency version ranges. Artifact digests, commitments, identity and migration verified; compatibility not certified."
+    },
+    {
+      "packageId": "mempool",
+      "version": "#mpg:3.4:10",
+      "sourceRegistry": "https://start9.mempool.guide",
+      "urls": [
+        "https://github.com/Horizon-btc/mempool-startos/releases/download/v3.4-beta7/mempool.s9pk"
+      ],
+      "commitment": {
+        "rootSighash": "GqafZvrfoIAgZ+g1qZARdTqQOZsKjSGak0jpx6gPI1g",
+        "rootMaxsize": 515
+      },
+      "approvedAt": "2026-11-02T18:30:11.374849+00:00",
+      "artifactDigests": [
+        "sha256:4bd601e6b68fc15283038ea23611351ab9ab2af71da78c17be6eafc285421a00"
+      ],
+      "notes": "Operator explicitly requested latest packages and to ignore conflicts on 2026-11-02. One-time override of changed asset repository (Horizon-btc/mempool-startos) and unknown dependency ranges in the affected component. GitHub SHA-256, exact source commitment, identity, manifest dependency and migration declarations verified before administrator publication; live destination commitment, retained versions and categories verified afterward. Compatibility not certified; automatic monitor policy unchanged."
     }
   ]
 }
