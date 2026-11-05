@@ -134,6 +134,28 @@ def metadata_guard(package_id, version, meta, policy, current_meta=None, indexed
         raise Hold("Upstream package requests a pre-download operator warning")
 
 
+def commitment_identity(commitment):
+    """New registry RPC tags the same Merkle commitment the pinned CLI emits."""
+    value = dict(commitment)
+    kind = value.pop("type", "merkle-archive")
+    if kind != "merkle-archive":
+        raise Hold("Unsupported package commitment type")
+    return value
+
+
+def tracking_guard(version, meta, policy):
+    """The configured registry owns release policy; verify artifact identity only."""
+    if parts(version)["flavor"] != policy["flavor"]:
+        raise Hold("Package flavor changed")
+    if not isinstance(meta.get("s9pks"), list) or not meta["s9pks"]:
+        raise Hold("No package artifacts")
+    for hw, artifact in meta["s9pks"]:
+        if not isinstance(hw, dict) or not artifact.get("urls") or not artifact.get("commitment"):
+            raise Hold("Incomplete artifact metadata")
+        for url in artifact["urls"]:
+            asset_repository(url)
+
+
 def dependency_guard(catalog, selected, package_id, version, meta):
     """Validate affected dependency component, including reverse consumers.
 
@@ -440,7 +462,7 @@ class Monitor:
             path, manifest, commitment = self.inspect_download(url, asset, tmp)
             if manifest.get("id") != package_id or manifest.get("version") != version:
                 raise Hold("Asset manifest differs from indexed identity/version")
-            if commitment != artifact["commitment"]:
+            if commitment_identity(commitment) != commitment_identity(artifact["commitment"]):
                 raise Hold("Asset commitment differs from source registry")
             for field in ("upstreamRepo", "packageRepo", "osVersion"):
                 if manifest.get(field) != meta.get(field):
@@ -477,9 +499,14 @@ class Monitor:
     def promote(self, package_id, version, meta, source, catalog):
         previous = latest(catalog["packages"][package_id]["versions"], parts(version)["flavor"])
         evidence = {"catalog": fingerprint(catalog), "metadata": fingerprint(meta), "assets": meta["s9pks"],
-                    "previousVersion": previous}
+                    "previousVersion": previous, "mode": "tracking" if self.config.get("trackingSource") else "curated"}
         with tempfile.TemporaryDirectory(prefix="asset-", dir=self.state.directory) as tmp:
             files = self.verify_downloads(package_id, version, meta, tmp)
+            if self.config.get("trackingSource"):
+                # The source must still publish the exact approved metadata after download.
+                live = self.index(source)["packages"].get(package_id, {}).get("versions", {}).get(version)
+                if live != meta:
+                    raise Hold("Tracked source changed during preflight; retry next cycle")
             # Detect concurrent operator changes immediately before the signed mutation.
             if fingerprint(self.index(self.config["destination"])) != fingerprint(catalog):
                 raise Hold("Destination catalog changed during preflight; retry next cycle")
@@ -500,7 +527,31 @@ class Monitor:
         LOG.info("Promoted and verified %s %s", package_id, version)
         return result
 
+    def process_tracking(self, package_id, policy, catalog, sources, selected):
+        source = self.config["trackingSource"]
+        if source not in self.config["sources"] or not source.startswith("https://"):
+            raise Hold("Tracking source must be an approved HTTPS registry")
+        versions = sources[source]["packages"].get(package_id, {}).get("versions", {})
+        version = latest(versions, policy["flavor"])
+        if version is None:
+            raise Hold("Tracked source has no version of configured package/flavor")
+        current = selected[package_id]
+        # Retain history and never downgrade or replace an existing version in place.
+        if not matches(version, ">" + current):
+            return catalog
+        meta = versions[version]
+        tracking_guard(version, meta, policy)
+        if self.dry_run:
+            LOG.info("Would track %s %s -> %s from %s after asset verification",
+                     package_id, current, version, source)
+            return catalog
+        catalog = self.promote(package_id, version, meta, source, catalog)
+        selected[package_id] = version
+        return catalog
+
     def process(self, package_id, policy, catalog, sources, selected):
+        if self.config.get("trackingSource"):
+            return self.process_tracking(package_id, policy, catalog, sources, selected)
         current = selected[package_id]
         current_meta = catalog["packages"][package_id]["versions"][current]
         current_upstream = parts(current)["upstream"]
@@ -689,7 +740,7 @@ class Monitor:
 
 
 def artifact_identity(meta):
-    return sorted(canonical({"requirements": hw, "urls": sorted(a["urls"]), "commitment": a["commitment"]})
+    return sorted(canonical({"requirements": hw, "urls": sorted(a["urls"]), "commitment": commitment_identity(a["commitment"])})
                   for hw, a in meta["s9pks"])
 
 

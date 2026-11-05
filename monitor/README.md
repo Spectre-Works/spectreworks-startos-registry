@@ -56,96 +56,58 @@ v20.19.5 runtime. ExVer and its two dependencies are pinned in `vendor/`;
 `vendor/SHA256SUMS` records their installed source hashes. No npm install or
 compilation is performed on the node.
 
-## Source and release policy
+## Active policy: follow the upstream registry
 
-Every run reads the live destination catalog. Newly registered apps need an
-explicit source mapping and signer authorization; the monitor alerts when a
-mapping is missing. Removed apps cease being scanned. Adding another flavor
-requires a deliberate policy/signer-scope change.
+As requested by the operator on 2026-11-05, `trackingSource` is
+`https://start9.mempool.guide`. For each registered/configured package, copy the
+newest higher version of its configured flavor from that registry. The source
+registry decides release readiness: StartOS requirements, dependency ranges
+(including null/legacy ranges), migration eligibility, hardware/capability
+changes, prerelease status, signing-key rotation, packaging/asset repository
+moves, and operator warnings do not require a separate local approval.
+This is delegated upstream release policy, not independent compatibility
+certification. StartOS still evaluates packages for the installing device.
 
-Both application release repositories and approved packaging repositories are
-checked through GitHub's paginated release API, with cached ETags. Package
-revisions in the source registry are also checked, even without a new application
-release. The default page bound is 2,000 releases per repository; exhaustion
-holds the check and alerts after repeated failure rather than silently truncating.
+Only the five configured app/flavor pairs are tracked. No automatic new-app
+registration, flavor switching, downgrade, deletion, or replacement of an
+already-published version occurs. Prior versions and categories are retained.
+GitHub-only assets are not published ahead of the source registry. Application
+release discovery and packaging-needed alerts are disabled in tracking mode;
+only the source registry's published catalog drives updates. Checks still run
+every six hours, with 15-minute retries on failures.
 
-The policy pins application forks, packaging/asset repositories, current
-flavors, known upstream signing keys, and the existing StartOS requirement.
-Application repositories may themselves provide `.s9pk` assets. GitHub-only
-assets are explicitly enabled in each app's policy; their trust boundary is
-the approved repository and GitHub's SHA-256 asset digest. Indexed candidates
-additionally require a known signing-key entry and an exact package commitment.
-Unknown signers, identities, asset hosts, or StartOS requirements are held.
+The source must be an approved HTTPS registry. The monitor requires complete
+artifact metadata and GitHub Release `.s9pk` URLs. Every artifact is downloaded
+temporarily (maximum 2 GiB) and verified against GitHub's SHA-256 digest. Native
+CLI inspection must match the source package ID, version, commitment, upstream
+and packaging identities, StartOS requirement, dependency declarations, and
+migration declaration. Source catalog metadata and the destination snapshot
+are rechecked immediately before signing; changes abort and retry. The exact
+inspected bytes are added with their original URLs. No package code runs.
 
-DATUM and Mempool retain prerelease lanes because the existing XBT catalog
-already uses beta packages. Knots, Fulcrum, and Canary ignore releases marked
-prerelease or named alpha/beta/RC. Policies are explicit rather than relying on
-GitHub's `latest` endpoint. DATUM's `v0.5.0beta` tag maps to the upstream numeric
-version `0.5.0` used by its wrapper. Knots build/date tag changes are tracked
-even when the numeric version does not increase. Unsupported new tag formats
-fail the source check and alert; they are not guessed.
-
-`baselinePublishedAt` is the original approved catalog date. Releases with the
-same upstream number are matched using tag evidence in package asset URLs.
-Release identity is not inferred solely from the existence of an old `.s9pk`.
-A new application release without a matching approved package emits a structured
-`packaging_required` event and ntfy alert. There is no packaging agent or
-automatic build/hosting process in this phase.
-
-## Compatibility and publication
-
-Start9's ExVer implementation evaluates flavors, revisions, migration ranges,
-and dependency constraints. The gate checks the updated app, reverse consumers,
-and their transitive dependencies. Required dependencies must be present and
-satisfy their declared range (including declared `satisfies` aliases). Optional
-dependencies are checked when their provider is in the registry. Required
-cycles, hardware regressions, changed runtime capabilities, and pre-download
-operator warnings hold publication.
-
-**A missing/null dependency `versionRange` is unknown, not unrestricted.** Legacy
-packages can enforce dependency compatibility in runtime JavaScript that the
-catalog does not expose. The monitor never runs that JavaScript. An upstream
-wrapper must publish explicit constraints before automatic promotion can be
-established. Do not replace null constraints with `*` just to bypass the gate.
-
-On deployment, DATUM candidates `#pow:0.4.1:27` and `#pow:0.5.0:1` were held
-because `datum -> bitcoind` has no published version range. This means
-compatibility is unverified; it is not evidence of a conflicting constraint.
-No application package was promoted during rollout. The notification destination
-was corrected on 2026-10-14 after a one-character topic mismatch was identified;
-both hold notices were republished and the operator confirmed visibility.
-
-Later on 2026-10-14, the operator explicitly verified compatibility and requested
-publication of DATUM `#pow:0.5.0:1`. That exact version was published after the
-normal source, artifact, commitment, hardware, and migration checks; the prior
-`#pow:0.4.1:26` remains available. The version-specific operator approval,
-candidate/catalog fingerprints, and commitments are recorded in the node's
-SQLite key `compatibilityApproval:datum:#pow:0.5.0:1` and the promotion audit;
-`state/catalog-lock.json` records the publication. The success notice was
-accepted by ntfy on the corrected topic. No dependency ranges were rewritten,
-and future releases remain subject to the normal gate.
-
-For an eligible candidate, all assets are downloaded temporarily (maximum 2 GiB
-per asset), verified against GitHub's digest, and inspected by the native CLI.
-Identity, version, source commitment, migration declaration, and dependencies
-must match indexed metadata. The destination snapshot is rechecked before
-mutation. The native `registry package add --url ...` path signs the exact
-inspected artifact and verifies remote bytes before submission; this avoids
-`promote` re-reading mutable source metadata after preflight. The original
-upstream URL is retained; the node does not host package downloads. Old versions
-and category assignments remain in the destination catalog.
+The configured HTTPS registry and its published commitments are the release
+trust authority in this mode; the legacy per-package signer/repository pins
+are not additional approval gates. The native CLI, scoped service signing key,
+download bounds, publication journal, destination commitment verification, and
+ntfy success receipts remain in use. The catalog records the artifact's own
+metadata; missing dependency ranges are never rewritten to `*`.
 
 Publication is journaled as pending before submission and verified afterward
-against destination requirements, URLs, and commitments. On restart, a complete
-publication is recognized; an absent publication is queued for another preflight.
-Conflicting or partial publication stops updates and alerts for operator recovery.
-Multi-artifact publication is not a registry transaction. Cross-package changes
-are applied only when each intermediate catalog is compatible; changes that
-require an incompatible simultaneous transition are held.
+against destination hardware requirements, URLs, and commitments. On restart,
+completed publications are recognized and their success notices recovered.
+An absent publication retries preflight. Conflicting or partial publications
+stop updates for operator recovery. Multi-artifact publication is not a registry
+transaction. Cross-package releases may be copied in separate steps, as they
+appear upstream; independent compatibility planning is not performed.
+Registry publication changes marketplace availability, not the host's services
+or customers' installed software. The scoped service key remains non-admin.
 
-These are catalog compatibility checks, not runtime integration tests or a
-guarantee for every customer's installed version/configuration. Registry updates
-do not upgrade the software on `bitcoin.local` or customer nodes.
+Without `trackingSource`, the legacy curated mode remains available in code:
+it applies explicit repository/signer/OS pins and local dependency, migration,
+hardware, capability, and warning gates, plus approved GitHub-only discovery.
+Those gates caused the historical holds and one-time overrides below. Removing
+`trackingSource` is a deliberate return to that stricter mode, not a requirement
+for ordinary tracking updates.
 
 ## Notifications and recovery
 
@@ -239,8 +201,8 @@ python3 monitor/monitor.py --config config/upstream-monitor.json \
 
 That config uses the node's CLI path. On a workstation, make a temporary copy
 with its `cli` field set to the installed local `start-cli`. Dry-run sends no
-alerts and performs no registration; it reports eligible indexed candidates
-and GitHub-only assets requiring inspection. Temporary artifacts from interrupted
+alerts and performs no registration; in tracking mode it reports newer source-registry versions that would be copied.
+In legacy curated mode it also reports GitHub-only assets requiring inspection. Temporary artifacts from interrupted
 production downloads are removed on startup while holding the process lock.
 
 Rollout validation: 34 focused tests passed on the workstation and ARM64 node;
@@ -292,3 +254,23 @@ icons, commitments, dependency constraints, and download URLs, is preserved.
 The pinned native CLI still inspects artifacts and signs publications; source
 trust and compatibility gates are unchanged. All 41 tests passed locally and on
 the ARM64 node before restart.
+
+## Tracking rollout on 2026-11-05
+
+The operator authorized following packages published by the upstream registry
+without repeated manual compatibility overrides. `trackingSource` enables this
+policy for the existing five flavors. All 48 tests passed locally and on ARM64,
+including changed OS/legacy dependency metadata, no downgrade/flavor switch,
+no GitHub-only discovery, dry-run behavior, and source changes during preflight.
+
+The modern registry tags Merkle commitments with `type: merkle-archive`; the
+pinned inspector returns the same hash/size without that label. Comparison
+normalizes only that known label, preserving hash/size checks and rejecting
+unknown commitment types.
+
+Production completed at 09:38 MST with all five latest source versions matched,
+zero source failures, no pending notifications, and a clear watchdog. The scoped
+monitor automatically published Canary `#blake:1.7.1:0` and Fulcrum
+`#blake:2.1.4:0`; their exact commitments are recorded in `state/catalog-lock.json`
+and the node's verified promotion audit. All recorded prior versions and the
+five category assignments remain present. Next scheduled scan: 15:38 MST.

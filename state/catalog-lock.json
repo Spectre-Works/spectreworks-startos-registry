@@ -143,6 +143,34 @@
         "sha256:4bd601e6b68fc15283038ea23611351ab9ab2af71da78c17be6eafc285421a00"
       ],
       "notes": "Operator explicitly requested latest packages and to ignore conflicts on 2026-11-02. One-time override of changed asset repository (Horizon-btc/mempool-startos) and unknown dependency ranges in the affected component. GitHub SHA-256, exact source commitment, identity, manifest dependency and migration declarations verified before administrator publication; live destination commitment, retained versions and categories verified afterward. Compatibility not certified; automatic monitor policy unchanged."
+    },
+    {
+      "packageId": "fulcrum",
+      "version": "#blake:2.1.4:0",
+      "sourceRegistry": "https://start9.mempool.guide",
+      "urls": [
+        "https://github.com/privkeyio/fulcrum-startos/releases/download/v2.1.4-blake_0/fulcrum.s9pk"
+      ],
+      "commitment": {
+        "rootSighash": "YsjbVFH13s9zHeF/wG6f6OxPYpIEalfY3g4DVWDt88c",
+        "rootMaxsize": 574
+      },
+      "approvedAt": "2026-11-05T16:38:00.821312+00:00",
+      "notes": "Automatically published by the scoped monitor under the operator-authorized upstream tracking policy of 2026-11-05. GitHub digest, native identity/manifest, source commitment, unchanged source/destination preflight and destination artifact identity verified. Prior versions and categories retained; upstream owns compatibility decisions."
+    },
+    {
+      "packageId": "canary",
+      "version": "#blake:1.7.1:0",
+      "sourceRegistry": "https://start9.mempool.guide",
+      "urls": [
+        "https://github.com/privkeyio/canary-startos/releases/download/v1.7.1-blake/canary.s9pk"
+      ],
+      "commitment": {
+        "rootSighash": "OhOCXRmyxy8IsPLaT4mTIaaVKViDBe/YcrM4UAPgEqY",
+        "rootMaxsize": 574
+      },
+      "approvedAt": "2026-11-05T16:37:45.986035+00:00",
+      "notes": "Automatically published by the scoped monitor under the operator-authorized upstream tracking policy of 2026-11-05. GitHub digest, native identity/manifest, source commitment, unchanged source/destination preflight and destination artifact identity verified. Prior versions and categories retained; upstream owns compatibility decisions."
     }
   ]
 }

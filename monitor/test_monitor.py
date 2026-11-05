@@ -180,6 +180,80 @@ class StateTests(unittest.TestCase):
                 with self.assertRaises(m.Hold):
                     self.monitor.index("https://example.com")
 
+    def test_commitment_format_tag_preserves_hash_size_and_type_checks(self):
+        plain = {"rootSighash": "exact", "rootMaxsize": 574}
+        tagged = dict(plain, type="merkle-archive")
+        self.assertEqual(m.commitment_identity(plain), m.commitment_identity(tagged))
+        for changed in ({"rootSighash": "different"}, {"rootMaxsize": 575}):
+            self.assertNotEqual(m.commitment_identity(plain),
+                                m.commitment_identity(dict(tagged, **changed)))
+        with self.assertRaises(m.Hold):
+            m.commitment_identity(dict(plain, type="unknown"))
+        a = {"s9pks": [[{}, {"urls": ["url"], "commitment": plain}]]}
+        b = {"s9pks": [[{}, {"urls": ["url"], "commitment": tagged}]]}
+        self.assertEqual(m.artifact_identity(a), m.artifact_identity(b))
+
+    def tracking_setup(self):
+        source = "https://upstream.example"
+        self.monitor.config.update({"trackingSource": source, "sources": [source]})
+        old = metadata()
+        new = metadata({"provider": dependency(None)})
+        new.update({"osVersion": "0.4.0.2", "preDownloadAlert": {"message": "warning"},
+                    "s9pks": [[{"arch": ["aarch64"]}, {
+                        "urls": ["https://github.com/new/wrapper/releases/download/v2/app.s9pk"],
+                        "commitment": {"hash": "exact"}}]]})
+        dest = catalog({"app": ("#x:1:0", old)})
+        upstream = catalog({"app": ("#x:2:0", new)})
+        return source, dest, upstream, new
+
+    def test_tracking_follows_registry_without_curated_or_github_gates(self):
+        source, dest, upstream, new = self.tracking_setup()
+        selected = {"app": "#x:1:0"}
+        with patch.object(self.monitor, "promote", return_value=upstream) as promote, \
+                patch.object(self.monitor, "releases", side_effect=AssertionError("No GitHub discovery")), \
+                patch.object(m, "dependency_guard", side_effect=AssertionError("Source owns compatibility")):
+            result = self.monitor.process("app", {"flavor": "x"}, dest, {source: upstream}, selected)
+        self.assertEqual(result, upstream)
+        promote.assert_called_once_with("app", "#x:2:0", new, source, dest)
+        self.assertEqual(selected["app"], "#x:2:0")
+
+    def test_tracking_dry_run_does_not_publish(self):
+        source, dest, upstream, _ = self.tracking_setup()
+        self.monitor.dry_run = True
+        with patch.object(self.monitor, "promote") as promote:
+            self.monitor.process("app", {"flavor": "x"}, dest, {source: upstream}, {"app": "#x:1:0"})
+        promote.assert_not_called()
+
+    def test_tracking_never_downgrades_or_adds_other_flavors(self):
+        source, dest, upstream, _ = self.tracking_setup()
+        upstream["packages"]["app"]["versions"]["#other:99:0"] = metadata()
+        with patch.object(self.monitor, "promote") as promote:
+            self.monitor.process("app", {"flavor": "x"}, dest, {source: upstream}, {"app": "#x:3:0"})
+        promote.assert_not_called()
+
+    def test_tracking_unapproved_source_and_missing_package_fail(self):
+        source, dest, upstream, _ = self.tracking_setup()
+        for sources in ([], [source]):
+            self.monitor.config["sources"] = sources
+            with self.subTest(sources=sources), self.assertRaises(m.Hold):
+                self.monitor.process("app", {"flavor": "x"}, dest,
+                                     {source: {"packages": {}}}, {"app": "#x:1:0"})
+
+    def test_tracking_source_mutation_prevents_signed_publication(self):
+        source, dest, upstream, new = self.tracking_setup()
+        with patch.object(self.monitor, "verify_downloads", return_value=[]), \
+                patch.object(self.monitor, "index", return_value={"packages": {}}), \
+                patch.object(self.monitor, "cli") as cli, self.assertRaisesRegex(m.Hold, "source changed"):
+            self.monitor.promote("app", "#x:2:0", new, source, dest)
+        cli.assert_not_called()
+        self.assertEqual(self.state.db.execute("SELECT count(*) FROM promotions").fetchone()[0], 0)
+
+    def test_tracking_rejects_non_release_asset_urls(self):
+        _, _, _, new = self.tracking_setup()
+        new["s9pks"][0][1]["urls"] = ["https://unapproved.example/app.s9pk"]
+        with self.assertRaises(m.Hold):
+            m.tracking_guard("#x:2:0", new, {"flavor": "x"})
+
     def test_event_deduplication(self):
         self.state.event("held", ["app", "#x:2:0"], {"message": "first"})
         self.state.event("held", ["app", "#x:2:0"], {"message": "second"})
