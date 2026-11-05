@@ -157,6 +157,29 @@ class StateTests(unittest.TestCase):
         self.addCleanup(self.state.db.close)
         self.monitor = m.Monitor({"cli": "start-cli", "destination": "https://example.com"}, self.state)
 
+    def test_catalog_rpc_preserves_modern_icons_and_security_metadata(self):
+        meta = metadata({"bitcoind": dependency(None)})
+        meta.update({"icon": "blake3/example.png", "s9pks": [["key", {"commitment": "signed"}]]})
+        expected = catalog({"datum": ("#pow:0.5.0:3", meta)})
+        with patch.object(m.urllib.request, "urlopen") as fetch:
+            fetch.return_value.__enter__.return_value.read.return_value = json.dumps(
+                {"jsonrpc": "2.0", "id": 0, "result": expected}).encode()
+            self.assertEqual(self.monitor.index("https://example.com"), expected)
+            request = fetch.call_args.args[0]
+            self.assertEqual(request.full_url, "https://example.com/rpc/v0")
+            self.assertEqual(json.loads(request.data)["method"], "package.index")
+
+    def test_catalog_rpc_rejects_errors_and_malformed_metadata(self):
+        replies = [{"id": 0, "error": {"code": -1}},
+                   {"id": 1, "result": {"packages": {}}},
+                   {"id": 0, "result": {"packages": {"app": {"versions": []}}}},
+                   {"id": 0, "result": {"packages": {"app": {"versions": {"1": None}}}}}]
+        for reply in replies:
+            with self.subTest(reply=reply), patch.object(m.urllib.request, "urlopen") as fetch:
+                fetch.return_value.__enter__.return_value.read.return_value = json.dumps(reply).encode()
+                with self.assertRaises(m.Hold):
+                    self.monitor.index("https://example.com")
+
     def test_event_deduplication(self):
         self.state.event("held", ["app", "#x:2:0"], {"message": "first"})
         self.state.event("held", ["app", "#x:2:0"], {"message": "second"})

@@ -279,3 +279,16 @@ not runtime compatibility certification.
 Fulcrum upstream `v2.1.4-blake` had no matching StartOS package in the checked
 sources, so `#blake:2.1.3:1` remains the latest published package. Knots, Canary
 and DATUM already matched their latest available package versions.
+
+## Catalog reader recovery on 2026-11-05
+
+The upstream registry began returning content-addressed icon paths (for example,
+`blake3/<hash>.png`). The pinned CLI 2.3.0 expects base64 data URLs and rejected
+the complete catalog with a deserialization error, preventing scans and triggering
+the seven-hour watchdog. Public catalog reads now use the registry's unsigned
+`POST /rpc/v0` method `package.index` directly, with a 180-second timeout, a
+32 MiB response limit, and response/package-map validation. Metadata, including
+icons, commitments, dependency constraints, and download URLs, is preserved.
+The pinned native CLI still inspects artifacts and signs publications; source
+trust and compatibility gates are unchanged. All 41 tests passed locally and on
+the ARM64 node before restart.

@@ -266,9 +266,33 @@ class Monitor:
         return p.stdout
 
     def index(self, url):
-        x = json.loads(self.cli("registry", "package", "index", "--format", "json", registry=url))
-        if not isinstance(x.get("packages"), dict):
+        # Read the public RPC JSON without the CLI's version-specific display types.
+        # New registries use content-addressed icon paths instead of base64 data URLs.
+        # Keep the complete metadata unchanged for trust/compatibility gates below.
+        request = urllib.request.Request(
+            url.rstrip("/") + "/rpc/v0",
+            data=json.dumps({"id": 0, "method": "package.index", "params": {}}).encode(),
+            headers={"Content-Type": "application/json", "User-Agent": "SPECTRE-WORKS-StartOS-Monitor"},
+            method="POST")
+        limit = 32 * 1024 * 1024
+        try:
+            with urllib.request.urlopen(request, timeout=180) as response:
+                raw = response.read(limit + 1)
+            if len(raw) > limit:
+                raise Hold("Registry catalog exceeds size limit")
+            reply = json.loads(raw)
+        except (OSError, ValueError):
+            raise Hold("Registry catalog request failed: " + urllib.parse.urlparse(url).netloc) from None
+        if not isinstance(reply, dict) or reply.get("error") or reply.get("id") != 0:
+            raise Hold("Registry returned an invalid catalog RPC response")
+        x = reply.get("result")
+        if not isinstance(x, dict) or not isinstance(x.get("packages"), dict):
             raise Hold("Registry returned an invalid catalog")
+        for entry in x["packages"].values():
+            if not isinstance(entry, dict) or not isinstance(entry.get("versions"), dict):
+                raise Hold("Registry returned invalid package versions")
+            if any(not isinstance(meta, dict) for meta in entry["versions"].values()):
+                raise Hold("Registry returned invalid package metadata")
         return x
 
     def github(self, url):
